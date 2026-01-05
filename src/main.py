@@ -4,7 +4,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-logging.basicConfig(level=logging.INFO, filename="./logs/api.log")
+#logging.basicConfig(level=logging.INFO, filename="./logs/api.log")
 app = FastAPI(title="Nail appointment system", version="0.0.1", description="Система обработки заказов для бизнеса по маникюру")
 
 app.add_middleware(
@@ -19,7 +19,7 @@ app.add_middleware(
 def wellcome():
     return{
         "message": "Добро пожаловать в Nail Booking",
-        "detail": "Докуументация http://localhost:8000/docs"
+        "detail": "Документация http://localhost:8000/docs"
     }
 
 if __name__ == "__main__":
