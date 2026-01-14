@@ -1,67 +1,71 @@
 import schemas
 
+from logger import logger
 from db.database import get_db
-from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from db import models
+from fastapi import APIRouter, Depends, HTTPException
+from services.service_service import ServiceService
 
 router = APIRouter(prefix="/services", tags=["Услуги"])
 
 @router.get("/{service_id}", response_model=schemas.ServiceResponse)
 async def get_service(service_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(models.Service).where(
-        models.Service.id == service_id
-    ))
-    service = result.scalars().first()
+    logger.info(f"GET: Получен запрос: GET /services/{service_id}")
+    logger.info(f"GET: Поиск услуги с id: {service_id} в бд...")
+    
+    service = await ServiceService.find_service_by_id(id=service_id, db=db)
+    
     if not service:
+        logger.error(f"GET: Услуга с id: {service_id} не найдена")
         raise HTTPException(status_code=404, detail="Такая услуга не найдена")
+    
+    logger.error(f"GET: Услуга с id: {service_id} найдена ✅")
     return service
 
 @router.post("/", response_model=schemas.ServiceResponse)
 async def create_service(service: schemas.ServiceCreate, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(models.Service).where(
-        models.Service.name == service.name,
-        models.Service.entrepreneur_id == service.entrepreneur_id
-    ))
-    existing = result.scalars().first()
+    logger.info(f"Получен запрос: POST /services/")
+    logger.info("POST: Проверка наличия услуги в бд...")
+    
+    existing = await ServiceService.find_by_name(service=service, db=db)
+    
     if existing:
+        logger.error("POST: такая услуга уже существует")
         raise HTTPException(status_code=400, detail="Такая услуга уже существует")
     
-    new_service = models.Service(**service.dict())
-    
-    db.add(new_service)
-    await db.commit()
-    await db.refresh(new_service)
+    logger.info("POST: Услуга не найдена в бд ✅. Запись данных...")
+    new_service = await ServiceService.create_service(service=service, db=db)
     
     return new_service
 
-@router.delete("/{service_id}", response_model=schemas.ServiceResponse)
+@router.delete("/{service_id}")
 async def delete_service(service_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(models.Service).where(
-        models.Service.id == service_id
-    ))
-    service = result.scalars().first()
+    logger.info(f"DELETE: Получен запрос: DELETE /services/{service_id}")
+    logger.info(f"DELETE: Проверка наличия услуги с id: {service_id} в бд...")
+    
+    service = await ServiceService.find_service_by_id(id=service_id, db=db)
     
     if not service:
+        logger.error(f"DELETE: Такой услуги не существует в бд")
         raise HTTPException(status_code=404, detail="Такой услуги не существует")
     
-    await db.delete(service)
-    await db.commit()
+    await ServiceService.delete_service(service=service, db=db)
+    
+    return {"succes": True}
     
 @router.put("/{service_id}", response_model=schemas.ServiceResponse)
 async def update_service(new_service: schemas.ServiceCreate, service_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(models.Service).where(
-        models.Service.id == service_id
-    ))
-    service = result.scalars().first()
+    logger.info(f"PUT: Получен запрос: PUT /services/{service_id}")
+    logger.info("PUT: Проверка наличия услуги в бд...")
+    
+    service = await ServiceService.find_service_by_id(id=service_id, db=db)
     
     if not service:
-        raise HTTPException(status_code=404, detail="Такоая услуга не найдена")
+        logger.error("PUT: Такая услуга не найдена")
+        raise HTTPException(status_code=404, detail="Такая услуга не найдена")
     
-    for key, value in new_service.dict().items():
-        if hasattr(key, service) and value is not None:
-            setattr(service, key, value)
+    logger.info("PUT: Услуга найдена ✅. Обновление данных...")
     
-    await db.commit()
-    await db.refresh(service)
+    await ServiceService.update_service(new_service=new_service, db=db, service=service)
+    
+    return service

@@ -9,3 +9,5 @@ __pycache__/
 alembic.ini
 config.py
 .vscode
+db_test_data.py
+env.py
