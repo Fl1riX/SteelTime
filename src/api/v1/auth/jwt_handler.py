@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from logger import logger
+from src.logger import logger
 from .config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 # настройка хэширования паролей
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto") 
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto") 
 
 def hash_password(password: str) -> str:
     """Хэшируем пароль"""

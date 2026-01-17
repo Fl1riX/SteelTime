@@ -2,9 +2,9 @@ import uvicorn
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.v1.endpoints import router as endpoints_router
-from api.v1.auth import router as auth_router
-from logger import logger
+from src.api.v1.endpoints import router as endpoints_router
+from src.api.v1.auth import router as auth_router
+from src.logger import logger
 
 app = FastAPI(title="Service Booking System", version="0.0.1", description="Система для бронирования услуг")
 app.include_router(endpoints_router, prefix="/api/v1")

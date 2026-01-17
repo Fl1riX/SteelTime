@@ -1,11 +1,10 @@
-import schemas
-
-from logger import logger
-from db.database import get_db
-from db import models
+from src import schemas
+from src.logger import logger
+from src.db.database import get_db
+from src.db import models
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException
-from services.entrepreneurs_service import EntrepreneurService
+from src.services.entrepreneurs_service import EntrepreneurService
 
 router = APIRouter(prefix="/entrepreneurs", tags=["Предприниматели"])
 

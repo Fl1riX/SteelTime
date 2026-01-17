@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field, validator
 from pydantic.functional_validators import BeforeValidator
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Optional
 
 # проверяем номер телефона
 def validate_phone(value: str) -> str:
@@ -52,17 +52,12 @@ class UserResponse(BaseModel):
     username: str
     phone: PhoneNumber
     email: Email 
-    created_at: datetime
     
     class Config:
         from_attributes = True
         
 class RegisterResponse(BaseModel):
-    id: int
-    telegram_id: TgId
-    username: str
-    phone: PhoneNumber
-    email: Email 
+    user: UserCreate
     token: str
     token_type: str
     
@@ -70,13 +65,22 @@ class RegisterResponse(BaseModel):
         from_attributes = True
         
 class UserLogin(BaseModel):
-    id: int
-    telegram_id: TgId
-    email: Email
-    phone: PhoneNumber
+    #id: int
+    telegram_id: Optional[TgId] = None
+    email: Optional[Email] = None
+    phone: Optional[PhoneNumber] = None
     password: str
     
     model_config = ConfigDict(extra='forbid')
+    #! TODO проавлидировать что хотябы в 1 поле естьь данные для входа
+    
+class UserLoginResponse(BaseModel):
+    id: int
+    token: str
+    token_type: str
+    
+    class Config:
+        from_attributes = True
 
 class EntrepreneurCreate(BaseModel):
     full_name: str

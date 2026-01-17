@@ -1,9 +1,8 @@
-import schemas
-
+from src import schemas
 from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from db.models import Entrepreneur
-from logger import logger
+from src.db.models import Entrepreneur
+from src.logger import logger
 
 class EntrepreneurService:
     @staticmethod

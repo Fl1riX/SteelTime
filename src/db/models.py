@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column, validates
 from typing import List
 from .database import Base
 from datetime import datetime
-from logger import logger
+from src.logger import logger
 
 #! TODO дописать валидацию данных в бд
 
@@ -68,7 +68,7 @@ class Service(Base): # услуга
     __table_args__ = (
       UniqueConstraint(
         "name",
-        "adress",
+        "address",
         "entrepreneur_id",
         name="uq_name_adress_entrepreneur_id",
       ),

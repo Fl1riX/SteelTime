@@ -1,12 +1,9 @@
-import schemas
-
-from db import models
-from db.database import get_db
-from logger import logger
-from sqlalchemy import select, and_
+from src import schemas
+from src.logger import logger
+from src.db.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException
-from services.appointments_service import AppointmentService
+from src.services.appointments_service import AppointmentService
 
 router = APIRouter(prefix="/appointments", tags=["Записи"])
 

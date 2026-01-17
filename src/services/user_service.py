@@ -1,9 +1,8 @@
-import schemas
-
+from src import schemas
 from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from db.models import User
-from logger import logger
+from src.db.models import User
+from src.logger import logger
 
 class UserService:
     @staticmethod
@@ -21,8 +20,8 @@ class UserService:
         return existing
     
     @staticmethod
-    async def create_user(user: schemas.UserCreate, db: AsyncSession):
-        new_user = User(**user.dict())
+    async def create_user(user: dict, db: AsyncSession):
+        new_user = User(**user)
         try:
             db.add(new_user)
             await db.commit()

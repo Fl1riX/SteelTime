@@ -1,10 +1,9 @@
-import schemas
-
-from logger import logger
-from db.database import get_db
+from src import schemas
+from src.logger import logger
+from src.db.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException
-from services.service_service import ServiceService
+from src.services.service_service import ServiceService
 
 router = APIRouter(prefix="/services", tags=["Услуги"])
 

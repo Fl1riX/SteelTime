@@ -1,12 +1,11 @@
-import schemas
-
+from src import schemas
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from auth.jwt_handler import create_access_token, verify_password, hash_password
+from .jwt_handler import create_access_token, verify_password, hash_password
 
-from db.database import get_db
-from services.user_service import UserService
-from logger import logger
+from src.db.database import get_db
+from src.services.user_service import UserService
+from src.logger import logger
 
 router = APIRouter(prefix="/auth", tags=["Авторизация"])
 
@@ -24,7 +23,7 @@ async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_d
     user_dict = user.dict()
     user_dict["password"] = hashed_password
     
-    new_user = await UserService.create_user(user=user, db=db) # вносим данные пользователя в базу данных
+    new_user = await UserService.create_user(user=user_dict, db=db) # вносим данные пользователя в базу данных
     
     token = create_access_token({"sub": new_user.id})
     
@@ -34,7 +33,7 @@ async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_d
             "token_type": "bearer"
             }
     
-@router.get("/login", response_model=schemas.UserResponse)
+@router.post("/login", response_model=schemas.UserLoginResponse)
 async def login_user(user: schemas.UserLogin, db: AsyncSession = Depends(get_db)):
     logger.info("Получен запрос: GET /auth/register")
     logger.info("POST: Проверка наличия пользователя в бд...")
@@ -50,10 +49,10 @@ async def login_user(user: schemas.UserLogin, db: AsyncSession = Depends(get_db)
         logger.info(f"Введен не верный пароль пользователя: {user.email}")
         raise HTTPException(status_code=404, detail="Неверный email или пароль")  
     
-    token = create_access_token({"sub": user.id})
+    token = create_access_token({"sub": user_exists.id})
     
     return {
-        "user_id": user.id,
+        "id": user_exists.id,
         "token": token,
         "token_type": "bearer"
     }
