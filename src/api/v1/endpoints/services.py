@@ -1,4 +1,4 @@
-from src import schemas
+from src.schemas import service_schema
 from src.logger import logger
 from src.db.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,7 +7,7 @@ from src.services.service_service import ServiceService
 
 router = APIRouter(prefix="/services", tags=["Услуги"])
 
-@router.get("/{service_id}", response_model=schemas.ServiceResponse)
+@router.get("/{service_id}", response_model=service_schema.ServiceResponse)
 async def get_service(service_id: int, db: AsyncSession = Depends(get_db)):
     logger.info(f"GET: Получен запрос: GET /services/{service_id}")
     logger.info(f"GET: Поиск услуги с id: {service_id} в бд...")
@@ -21,8 +21,8 @@ async def get_service(service_id: int, db: AsyncSession = Depends(get_db)):
     logger.error(f"GET: Услуга с id: {service_id} найдена ✅")
     return service
 
-@router.post("/", response_model=schemas.ServiceResponse)
-async def create_service(service: schemas.ServiceCreate, db: AsyncSession = Depends(get_db)):
+@router.post("/", response_model=service_schema.ServiceResponse)
+async def create_service(service: service_schema.ServiceCreate, db: AsyncSession = Depends(get_db)):
     logger.info(f"Получен запрос: POST /services/")
     logger.info("POST: Проверка наличия услуги в бд...")
     
@@ -52,8 +52,8 @@ async def delete_service(service_id: int, db: AsyncSession = Depends(get_db)):
     
     return {"succes": True}
     
-@router.put("/{service_id}", response_model=schemas.ServiceResponse)
-async def update_service(new_service: schemas.ServiceCreate, service_id: int, db: AsyncSession = Depends(get_db)):
+@router.put("/{service_id}", response_model=service_schema.ServiceResponse)
+async def update_service(new_service: service_schema.ServiceCreate, service_id: int, db: AsyncSession = Depends(get_db)):
     logger.info(f"PUT: Получен запрос: PUT /services/{service_id}")
     logger.info("PUT: Проверка наличия услуги в бд...")
     

@@ -1,4 +1,4 @@
-from src import schemas
+from src.schemas import user_schema
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from .jwt_handler import create_access_token, verify_password, hash_password
@@ -9,8 +9,8 @@ from src.logger import logger
 
 router = APIRouter(prefix="/auth", tags=["Авторизация"])
 
-@router.post("/register", response_model=schemas.RegisterResponse)
-async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
+@router.post("/register", response_model=user_schema.UserRegisterResponse)
+async def create_user(user: user_schema.UserRegister, db: AsyncSession = Depends(get_db)):
     logger.info("Получен запрос: POST /auth/register")
     logger.info("POST: Проверка наличия пользователя в бд...")
     
@@ -33,8 +33,8 @@ async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_d
             "token_type": "bearer"
             }
     
-@router.post("/login", response_model=schemas.UserLoginResponse)
-async def login_user(user: schemas.UserLogin, db: AsyncSession = Depends(get_db)):
+@router.post("/login", response_model=user_schema.UserLoginResponse)
+async def login_user(user: user_schema.UserLogin, db: AsyncSession = Depends(get_db)):
     logger.info("Получен запрос: GET /auth/register")
     logger.info("POST: Проверка наличия пользователя в бд...")
     user_exists = await UserService.check_user_exists(user=user, db=db)

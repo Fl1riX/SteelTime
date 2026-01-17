@@ -1,4 +1,4 @@
-from src import schemas
+from src.schemas import appointment_schema
 from src.logger import logger
 from src.db.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,7 +7,7 @@ from src.services.appointments_service import AppointmentService
 
 router = APIRouter(prefix="/appointments", tags=["Записи"])
 
-@router.get("/{appointment_id}", response_model=schemas.AppointmentResponse)
+@router.get("/{appointment_id}", response_model=appointment_schema.AppointmentResponse)
 async def get_appointment(appointment_id: int, db: AsyncSession = Depends(get_db)):
     logger.info(f"Поступил запрос: GET /appointments/{appointment_id}")
     logger.info(f"GET: Поиск записи с id: {appointment_id} в базе данных...")
@@ -22,8 +22,8 @@ async def get_appointment(appointment_id: int, db: AsyncSession = Depends(get_db
 
     return appointment
 
-@router.post("/", response_model=schemas.AppointmentResponse)
-async def create_appointment(appointment: schemas.AppointmentCreate, db: AsyncSession = Depends(get_db)):
+@router.post("/", response_model=appointment_schema.AppointmentResponse)
+async def create_appointment(appointment: appointment_schema.AppointmentCreate, db: AsyncSession = Depends(get_db)):
     logger.info("Поступил запрос: POST /appointments/")
     logger.info(f"POST: Проверка наличия записи в бд...")
     
@@ -37,8 +37,8 @@ async def create_appointment(appointment: schemas.AppointmentCreate, db: AsyncSe
         
     return new_appointment
         
-@router.put("/{appointment_id}", response_model=schemas.AppointmentResponse)
-async def update_appointment(appointment_id: int, new_appointment: schemas.AppointmentCreate, db: AsyncSession = Depends(get_db)):
+@router.put("/{appointment_id}", response_model=appointment_schema.AppointmentResponse)
+async def update_appointment(appointment_id: int, new_appointment: appointment_schema.AppointmentCreate, db: AsyncSession = Depends(get_db)):
     logger.info(f"Поступил запрос: PUT /appointments/{appointment_id}")
     logger.info(f"PUT: Поиск записи с id: {appointment_id} в базе данных...")
     
@@ -57,7 +57,7 @@ async def update_appointment(appointment_id: int, new_appointment: schemas.Appoi
     
     return appointment
     
-@router.delete("/{appointment_id}", response_model=schemas.AppointmentResponse)
+@router.delete("/{appointment_id}", response_model=appointment_schema.AppointmentResponse)
 async def delete_appointment(appointment_id: int, db: AsyncSession = Depends(get_db)):
     logger.info(f"Поступил запрос: DELETE /appointments/{appointment_id}")
     logger.info(f"DELETE: Поиск записи с id: {appointment_id} в базе данных...")

@@ -1,4 +1,4 @@
-from src import schemas
+from src.schemas import user_schema
 from src.logger import logger
 from src.db.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,7 +7,7 @@ from src.services.user_service import UserService
 
 router = APIRouter(prefix="/users", tags=["Пользователи"])
 
-@router.get("/{user_id}", response_model=schemas.UserResponse)
+@router.get("/{user_id}", response_model=user_schema.UserResponse)
 async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):
     logger.info(f"GET: Получен запрос: GET /users/{user_id}")
     logger.info(f"GET: Проверка наличия пользователя с id: {user_id} в бд...")
@@ -21,8 +21,8 @@ async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):
     logger.info(f"GET: Найден пользователь с id: {user_id} ✅")
     return user
 
-@router.put("/{user_id}", response_model=schemas.UserResponse)
-async def update_user(user_id: int, new_user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
+@router.put("/{user_id}", response_model=user_schema.UserResponse)
+async def update_user(user_id: int, new_user: user_schema.UserRegister, db: AsyncSession = Depends(get_db)):
     logger.info(f"PUT: Получен запрос: PUT /users/{user_id}")
     logger.info(f"PUT: Проверка наличия пользователя с id: {user_id} в бд...")
     

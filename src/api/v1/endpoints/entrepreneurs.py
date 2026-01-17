@@ -1,4 +1,4 @@
-from src import schemas
+from src.schemas import entrepreneur_schema
 from src.logger import logger
 from src.db.database import get_db
 from src.db import models
@@ -8,7 +8,7 @@ from src.services.entrepreneurs_service import EntrepreneurService
 
 router = APIRouter(prefix="/entrepreneurs", tags=["Предприниматели"])
 
-@router.get("/{user_id}", response_model=schemas.EntrepreneurResponse)
+@router.get("/{user_id}", response_model=entrepreneur_schema.EntrepreneurResponse)
 async def get_user(user_id:  int, db: AsyncSession = Depends(get_db)):
     logger.info(f"GET: Получен запрос: GET /entrepreneurs/{user_id}")
     logger.info(f"GET: Поиск пользователя с id: {user_id} в бд...")
@@ -21,8 +21,8 @@ async def get_user(user_id:  int, db: AsyncSession = Depends(get_db)):
     logger.info(f"GET: Найден пользователь: {entrepreneur.full_name}, {entrepreneur.id}✅")
     return entrepreneur
 
-@router.post("/", response_model=schemas.EntrepreneurResponse)
-async def create_entrepreneur(entrepreneur: schemas.EntrepreneurCreate, db: AsyncSession = Depends(get_db)):
+@router.post("/", response_model=entrepreneur_schema.EntrepreneurResponse)
+async def create_entrepreneur(entrepreneur: entrepreneur_schema.EntrepreneurCreate, db: AsyncSession = Depends(get_db)):
     logger.info("POST: Получен запрос: POST /entrepreneurs/")
     logger.info("POST: Проверка наличия пользователя в бд...")
     
@@ -37,8 +37,8 @@ async def create_entrepreneur(entrepreneur: schemas.EntrepreneurCreate, db: Asyn
     
     return new_entrepreneur
 
-@router.put("/{entrepreneur_id}", response_model=schemas.EntrepreneurResponse)
-async def update_entrepreneur(new_entrepreneur: schemas.EntrepreneurCreate, entrepreneur_id: int, db: AsyncSession = Depends(get_db)):
+@router.put("/{entrepreneur_id}", response_model=entrepreneur_schema.EntrepreneurResponse)
+async def update_entrepreneur(new_entrepreneur: entrepreneur_schema.EntrepreneurCreate, entrepreneur_id: int, db: AsyncSession = Depends(get_db)):
     logger.info(f"PUT: Получен запрос: PUT /entrepreneurs/{entrepreneur_id}")
     logger.info(f"PUT: Проверка наличия пользователя с id: {entrepreneur_id} в бд")
     
