@@ -1,10 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 
 from src.schemas import appointment_schema
 from src.logger import logger
 from src.db.database import get_db
-from src.main import limiter
+from src.limiter import limiter
 from src.services.appointments_service import AppointmentService
 from src.api.v1.auth.dependencies import get_current_user_id
 
@@ -12,7 +12,12 @@ router = APIRouter(prefix="/appointments", tags=["Записи"])
 
 @router.get("/{appointment_id}", response_model=appointment_schema.AppointmentResponse)
 @limiter.limit("5/minute")
-async def get_appointment(appointment_id: int, current_user_id: int = Depends(get_current_user_id), db: AsyncSession = Depends(get_db)):
+async def get_appointment(
+    request: Request,
+    appointment_id: int, 
+    current_user_id: int = Depends(get_current_user_id), 
+    db: AsyncSession = Depends(get_db)
+):
     logger.info(f"Поступил запрос: GET /appointments/{appointment_id}")
     logger.info(f"GET: Поиск записи с id: {appointment_id} в базе данных...")
     
@@ -35,6 +40,7 @@ async def get_appointment(appointment_id: int, current_user_id: int = Depends(ge
 @router.post("/", response_model=appointment_schema.AppointmentResponse)
 @limiter.limit("5/minute")
 async def create_appointment(
+    request: Request,
     appointment: appointment_schema.AppointmentCreate, 
     current_user_id: int = Depends(get_current_user_id), 
     db: AsyncSession = Depends(get_db)
@@ -55,6 +61,7 @@ async def create_appointment(
 @router.put("/{appointment_id}", response_model=appointment_schema.AppointmentResponse)
 @limiter.limit("5/minute")
 async def update_appointment(
+    request: Request,
     appointment_id: int, 
     new_appointment: appointment_schema.AppointmentCreate, 
     current_user_id: int = Depends(get_current_user_id), 
@@ -87,7 +94,12 @@ async def update_appointment(
     
 @router.delete("/{appointment_id}", response_model=appointment_schema.AppointmentResponse)
 @limiter.limit("5/minute")
-async def delete_appointment(appointment_id: int, current_user_id: int = Depends(get_current_user_id), db: AsyncSession = Depends(get_db)):
+async def delete_appointment(
+    request: Request,
+    appointment_id: int, 
+    current_user_id: int = Depends(get_current_user_id), 
+    db: AsyncSession = Depends(get_db)
+):
     logger.info(f"Поступил запрос: DELETE /appointments/{appointment_id}")
     logger.info(f"DELETE: Поиск записи с id: {appointment_id} в базе данных...")
     

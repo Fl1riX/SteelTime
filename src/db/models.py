@@ -100,7 +100,7 @@ class Appointment(Base): # запись
     entrepreneur: Mapped["User"] = relationship(
                                                          back_populates="users_appointments",
                                                          lazy="selectin",
-                                                         foreign_key=[entrepreneur_id] # явно указываем внешний ключ, чтобы небыло ошибок
+                                                         foreign_keys=[entrepreneur_id] # явно указываем внешний ключ, чтобы небыло ошибок
                                                        ) # ссылаемся на предринимателя
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(

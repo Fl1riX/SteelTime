@@ -1,18 +1,22 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 
 from src.schemas import service_schema
 from src.logger import logger
 from src.db.database import get_db
 from src.services.service_service import ServiceService
 from src.api.v1.auth.dependencies import get_current_user_id
-from src.main import limiter
+from src.limiter import limiter
 
 router = APIRouter(prefix="/services", tags=["Услуги"])
 
 @router.get("/{service_id}", response_model=service_schema.ServiceResponse)
 @limiter.limit("5/minute")
-async def get_service(service_id: int, db: AsyncSession = Depends(get_db)):
+async def get_service(
+    request: Request,
+    service_id: int, 
+    db: AsyncSession = Depends(get_db)
+):
     logger.info(f"GET: Получен запрос: GET /services/{service_id}")
     
     logger.info(f"GET: Поиск услуги с id: {service_id} в бд...")
@@ -27,7 +31,12 @@ async def get_service(service_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.post("/", response_model=service_schema.ServiceResponse)
 @limiter.limit("5/minute")
-async def create_service(service: service_schema.ServiceCreate, current_user_id: int = Depends(get_current_user_id), db: AsyncSession = Depends(get_db)):
+async def create_service(
+    request: Request,
+    service: service_schema.ServiceCreate, 
+    current_user_id: int = Depends(get_current_user_id), 
+    db: AsyncSession = Depends(get_db)
+):
     logger.info(f"Получен запрос: POST /services/")
     
     logger.info("POST: Проверка наличия услуги в бд...")
@@ -44,7 +53,12 @@ async def create_service(service: service_schema.ServiceCreate, current_user_id:
 
 @router.delete("/{service_id}")
 @limiter.limit("5/minute")
-async def delete_service(service_id: int, current_user_id: int = Depends(get_current_user_id), db: AsyncSession = Depends(get_db)):
+async def delete_service(
+    request: Request,
+    service_id: int, 
+    current_user_id: int = Depends(get_current_user_id), 
+    db: AsyncSession = Depends(get_db)
+):
     logger.info(f"DELETE: Получен запрос: DELETE /services/{service_id}")
     logger.info(f"DELETE: Проверка наличия услуги с id: {service_id} в бд...")
     
@@ -67,7 +81,13 @@ async def delete_service(service_id: int, current_user_id: int = Depends(get_cur
     
 @router.put("/{service_id}", response_model=service_schema.ServiceResponse)
 @limiter.limit("5/minute")
-async def update_service(new_service: service_schema.ServiceCreate, service_id: int, current_user_id: int = Depends(get_current_user_id), db: AsyncSession = Depends(get_db)):
+async def update_service(
+    request: Request,
+    new_service: service_schema.ServiceCreate, 
+    service_id: int, 
+    current_user_id: int = Depends(get_current_user_id), 
+    db: AsyncSession = Depends(get_db)
+):
     logger.info(f"PUT: Получен запрос: PUT /services/{service_id}")
     logger.info("PUT: Проверка наличия услуги в бд...")
     

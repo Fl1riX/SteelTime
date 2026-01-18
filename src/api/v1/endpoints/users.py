@@ -1,19 +1,23 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 
 from src.schemas import user_schema
 from src.logger import logger
 from src.db.database import get_db
 from src.api.v1.auth.dependencies import get_current_user_id
 from src.services.user_service import UserService
-from src.main import limiter
-
+from src.limiter import limiter
 
 router = APIRouter(prefix="/users", tags=["Пользователи"])
 
 @router.get("/{user_id}",  response_model=user_schema.UserResponse)
 @limiter.limit("5/minute")
-async def get_user(user_id: int, current_user_id: int = Depends(get_current_user_id), db: AsyncSession = Depends(get_db)):
+async def get_user(
+    request: Request,
+    user_id: int, 
+    current_user_id: int = Depends(get_current_user_id), 
+    db: AsyncSession = Depends(get_db)
+):
     logger.info(f"GET: Получен запрос: GET /users/{user_id}")
     
     logger.info("Аутентификация пользователя")
@@ -36,7 +40,13 @@ async def get_user(user_id: int, current_user_id: int = Depends(get_current_user
 
 @router.put("/{user_id}", response_model=user_schema.UserResponse)
 @limiter.limit("5/minute")
-async def update_user(user_id: int, new_user: user_schema.UserRegister, current_user_id: int = Depends(get_current_user_id), db: AsyncSession = Depends(get_db)):
+async def update_user(
+    request: Request,
+    user_id: int, 
+    new_user: user_schema.UserRegister, 
+    current_user_id: int = Depends(get_current_user_id), 
+    db: AsyncSession = Depends(get_db)
+):
     logger.info(f"PUT: Получен запрос: PUT /users/{user_id}")
     
     logger.info("Аутентификация пользователя")
@@ -62,7 +72,12 @@ async def update_user(user_id: int, new_user: user_schema.UserRegister, current_
 
 @router.delete("/{user_id}")
 @limiter.limit("5/minute")
-async def delet_user(user_id: int, current_user_id: int = Depends(get_current_user_id), db: AsyncSession = Depends(get_db)):
+async def delet_user(
+    request: Request,
+    user_id: int, 
+    current_user_id: int = Depends(get_current_user_id), 
+    db: AsyncSession = Depends(get_db)
+):
     logger.info(f"DELETE: Получен запрос: DELETE /users/{user_id}")
     
     logger.info("Аутентификация пользователя")

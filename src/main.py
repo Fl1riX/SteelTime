@@ -1,17 +1,15 @@
 import uvicorn
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
+from fastapi import FastAPI, Request
+#from fastapi.middleware.cors import CORSMiddleware
 from slowapi.middleware import SlowAPIMiddleware
 
 from src.api.v1.endpoints import router as endpoints_router
 from src.api.v1.auth import router as auth_router
 from src.logger import logger
+from src.limiter import limiter
 
-limiter = Limiter(key_func=get_remote_address)
+
 app = FastAPI(
     title="Service Booking System", 
     version="0.0.1", 
@@ -32,7 +30,7 @@ app.include_router(auth_router)
 
 @app.get("/")
 @limiter.limit("5/minute")
-def wellcome():
+def wellcome(request: Request):
     logger.info("Получен запрос: GET /")
     return{
         "message": "Добро пожаловать в Service-Booking-System",

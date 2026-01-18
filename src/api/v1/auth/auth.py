@@ -1,5 +1,5 @@
 from src.schemas import user_schema
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -14,7 +14,7 @@ limiter = Limiter(key_func=get_remote_address)
 
 @router.post("/register", response_model=user_schema.UserRegisterResponse)
 @limiter.limit("5/minute")
-async def create_user(user: user_schema.UserRegister, db: AsyncSession = Depends(get_db)):
+async def create_user(request: Request, user: user_schema.UserRegister, db: AsyncSession = Depends(get_db)):
     logger.info("Получен запрос: POST /auth/register")
     logger.info("POST: Проверка наличия пользователя в бд...")
     
@@ -39,7 +39,7 @@ async def create_user(user: user_schema.UserRegister, db: AsyncSession = Depends
     
 @router.post("/login", response_model=user_schema.UserLoginResponse)
 @limiter.limit("5/minute")
-async def login_user(user: user_schema.UserLogin, db: AsyncSession = Depends(get_db)):
+async def login_user(request: Request, user: user_schema.UserLogin, db: AsyncSession = Depends(get_db)):
     logger.info("Получен запрос: GET /auth/register")
     logger.info("POST: Проверка наличия пользователя в бд...")
     user_exists = await UserService.check_user_exists(user=user, db=db)
