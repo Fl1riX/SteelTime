@@ -1,4 +1,3 @@
-```markdown
 # ⚙️ SteelTime
 
 > **Умная система онлайн-записи на услуги**  
@@ -151,4 +150,3 @@ curl -X POST "http://127.0.0.1:8000/appointments/" \
 <div align="center">
   <strong>Сделано с ❤️ и ☕</strong>
 </div>
-```
