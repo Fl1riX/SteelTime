@@ -12,7 +12,7 @@ from src.api.v1.auth.auth import router as auth_router
 
 
 app = FastAPI(
-    title="Service Booking System", 
+    title="SteelTime", 
     version="0.0.1", 
     description="Система для бронирования услуг"
 )
@@ -34,7 +34,7 @@ app.include_router(auth_router)
 def wellcome(request: Request):
     logger.info("Получен запрос: GET /")
     return{
-        "message": "Добро пожаловать в Service-Booking-System",
+        "message": "Добро пожаловать в SteelTime",
         "detail": "Документация http://localhost:8000/docs"
     }
 
