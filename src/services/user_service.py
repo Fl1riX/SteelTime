@@ -88,6 +88,7 @@ class UserService:
             await db.refresh(user)
 
             logger.info("PUT: Данные пользователя успешно обновлены ✅")
+            return user
         except Exception as e:
             await db.rollback()
             logger.error(f"PUT: ❌ Ошибка ❌: {e}")

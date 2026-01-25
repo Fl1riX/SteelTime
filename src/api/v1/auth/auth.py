@@ -90,20 +90,19 @@ async def change_password(
                 detail="Пользователь не найден"
             )
         
-        logger.debug(f"Текущий пароль: {user.password}. Пароль от пользователя: {hash_password(user_data.current_password)}")
-        if not verify_password(password=user_data.current_password, hashed_password=user.password):
-            logger.warning(f"Неудачная попытка смены пароля пользователю: {user.id}. Текущий пароль не верный.")
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Отказано в доступе, введен неверный пароль"
-            )
-        
         logger.info("Аутентификация пользователя...")
         if current_user_id != user.id:
             logger.warning(f"Пользователь: {current_user_id} пытается сменить пароль пользователя: {user.id}")
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="У вас нет доступа к этому аккаунту"
+            )
+        
+        if not verify_password(password=user_data.current_password, hashed_password=user.password):
+            logger.warning(f"Неудачная попытка смены пароля пользователю: {user.id}. Текущий пароль не верный.")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Отказано в доступе, введен неверный пароль"
             )
         
         logger.info("Обновление пароля пользователя...")

@@ -46,7 +46,7 @@ async def create_appointment(
     db: AsyncSession = Depends(get_db)
 ):
     logger.info("Поступил запрос: POST /appointments/")
-    logger.info(f"POST: Проверка наличия записи в бд...")
+    logger.info("POST: Проверка наличия записи в бд...")
     
     existing = await AppointmentService.find_appointment(db=db, appointment=appointment, current_user_id=current_user_id)
     
@@ -84,11 +84,11 @@ async def update_appointment(
         )
     
     await AppointmentService.update_appointment(
-                                                 db=db, 
-                                                 appointment_id=appointment_id, 
-                                                 new_appointment=new_appointment, 
-                                                 appointment=appointment
-                                               )
+        db=db, 
+        appointment_id=appointment_id, 
+        new_appointment=new_appointment, 
+        appointment=appointment
+    )
     
     return appointment
     
