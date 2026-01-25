@@ -35,10 +35,7 @@ class AppointmentService:
     async def create_appointment(appointment:appointment_schema.AppointmentCreate, current_user_id: int, db: AsyncSession): 
         logger.info("POST: Запись не найдена в бд ✅. Добавление информации...")
         
-        appointment_data = Appointment(**appointment.dict())
-        appointment_data["user_id"] = current_user_id
-        
-        new_appointment = Appointment(**appointment_data)
+        new_appointment = Appointment(**appointment.dict(), user_id=current_user_id)
 
         try:
             db.add(new_appointment)
