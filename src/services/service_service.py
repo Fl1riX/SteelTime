@@ -2,7 +2,7 @@ from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.schemas import service_schema
-from src.db.models import Service, User
+from src.db.models import Service
 from src.logger import logger
 from src.services.user_service import UserService
 
@@ -51,10 +51,7 @@ class ServiceService:
             user.is_entrepreneur = True
             await db.flush() # сохранение изменения флага 
         
-        service_data = Service(**service.dict())
-        service_data["entrepreneur_id"] = current_user_id
-        
-        new_service = Service(**service_data)
+        new_service = Service(**service.dict(), entrepreneur_id=current_user_id)
     
         try:
             db.add(new_service)
