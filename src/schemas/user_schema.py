@@ -4,12 +4,12 @@ from .types import TgId, Email, PhoneNumber, Login
 from datetime import datetime
 
 class UserRegister(BaseModel):
-    telegram_id: TgId | None 
+    telegram_id: Optional[TgId] = None 
     username: str = Field(max_length=50)
     phone: PhoneNumber | None
     email: Email 
     password: str = Field(max_length=255, min_length=8)
-    is_entrepreneur: bool = False
+    is_entrepreneur: Optional[bool] = False
     full_name: Optional[str] = None
     
     model_config = ConfigDict(extra='forbid') # запрещаем не указанные поля

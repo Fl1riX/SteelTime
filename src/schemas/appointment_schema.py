@@ -6,7 +6,6 @@ class AppointmentCreate(BaseModel):
     comment: str = Field(max_length=1200)
     service_id: int
     entrepreneur_id: int
-    user_id: int
     
     model_config = ConfigDict(extra='forbid')
 

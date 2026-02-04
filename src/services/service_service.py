@@ -83,7 +83,7 @@ class ServiceService:
     @staticmethod 
     async def update_service(db: AsyncSession, new_service: service_schema.ServiceCreate, service: Service):
         """Обновляет данные об услуге"""
-        for key, value in new_service.dict().items():
+        for key, value in new_service.model_dump().items():
             if hasattr(service, key) and value is not None:
                 setattr(service, key, value)
 

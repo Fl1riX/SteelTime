@@ -86,7 +86,7 @@ async def change_password(
         if not user:
             logger.warning(f"Пользователь: {user} не найден")
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
+                status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Пользователь не найден"
             )
         
@@ -94,7 +94,7 @@ async def change_password(
         if current_user_id != user.id:
             logger.warning(f"Пользователь: {current_user_id} пытается сменить пароль пользователя: {user.id}")
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
+                status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="У вас нет доступа к этому аккаунту"
             )
         

@@ -59,7 +59,7 @@ async def create_appointment(
     return new_appointment
         
 @router.put("/{appointment_id}", response_model=appointment_schema.AppointmentResponse)
-@limiter.limit("5/minute")
+@limiter.limit("3/minute")
 async def update_appointment(
     request: Request,
     appointment_id: int, 
@@ -92,7 +92,7 @@ async def update_appointment(
     
     return appointment
     
-@router.delete("/{appointment_id}", response_model=appointment_schema.AppointmentResponse)
+@router.delete("/{appointment_id}")
 @limiter.limit("5/minute")
 async def delete_appointment(
     request: Request,

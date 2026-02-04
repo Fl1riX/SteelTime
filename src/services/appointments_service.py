@@ -51,7 +51,7 @@ class AppointmentService:
     @staticmethod 
     async def update_appointment(db: AsyncSession, appointment_id: int, new_appointment: appointment_schema.AppointmentCreate, appointment: Appointment):
         logger.info(f"PUT: Запись с id: {appointment_id} успешно найдена в бд ✅. Обновление данных...")
-        for key, value in new_appointment.dict().items():
+        for key, value in new_appointment.model_dump().items():
             if hasattr(appointment, key) and value is not None:
                 setattr(appointment, key, value)
 

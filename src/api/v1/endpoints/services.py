@@ -38,14 +38,6 @@ async def create_service(
     db: AsyncSession = Depends(get_db)
 ):
     logger.info("Получен запрос: POST /services/")
-    
-    if current_user_id != service.entrepreneur_id:
-        logger.warning(f"Пользователь с id: {current_user_id} пытается поздать услугу пользователю с id: {service.entrepreneur_id}")
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Вы не можете создать услугу другому пользователю"
-        )
-    
     logger.info("POST: Проверка наличия услуги в бд...")
     existing = await ServiceService.find_by_name(name=service.name, address=service.address, current_user_id=current_user_id, db=db)
     

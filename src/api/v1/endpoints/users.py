@@ -38,6 +38,19 @@ async def get_user(
     logger.info(f"GET: Найден пользователь с id: {user_id} ✅")
     return user
 
+@router.get("/check_tg_link/{telegram_id}")
+@limiter.limit("5/minute")
+async def check_user_telegram_connection(
+    request: Request, 
+    telegram_id: str, 
+    db: AsyncSession = Depends(get_db)
+):
+    connected = await UserService.check_telegram_connection(tg_id=telegram_id, db=db)
+    if not connected:
+        logger.info(f"Пользователь с id: {telegram_id} не привязан к боту")
+        return {"connected": False}
+    return {"connected": True}
+
 @router.put("/{user_id}", response_model=user_schema.UserUpdate)
 @limiter.limit("5/minute")
 async def update_user(

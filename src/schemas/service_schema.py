@@ -6,7 +6,6 @@ class ServiceCreate(BaseModel):
     description: str
     duration: str
     address: str
-    entrepreneur_id: int
     
     model_config = ConfigDict(extra='forbid')
 

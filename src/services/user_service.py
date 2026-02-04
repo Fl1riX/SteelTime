@@ -21,6 +21,17 @@ class UserService:
         registred = result.scalars().first()
         return registred
     
+    @staticmethod
+    async def check_telegram_connection(tg_id: str, db: AsyncSession):
+        result = await db.execute(select(User).where(
+            User.telegram_id == tg_id
+        ))
+        telegram_id = result.scalar()
+        if telegram_id is None:
+            logger.info(f"Пользователь с id: {tg_id} не привязал бота")
+            return False
+        return True
+        
     @classmethod
     async def check_user_exists(cls, user: user_schema.UserLogin | user_schema.ChangePassword, db: AsyncSession):
         """Проверка существования пользователя при входе в аккаунт"""
@@ -79,7 +90,7 @@ class UserService:
     async def update_user(new_user: user_schema.UserUpdate, db: AsyncSession, user: User):
         """Обновление данных пользователя"""
         # построчно передираем словарь
-        for key, value in new_user.dict().items(): # items построчно разбивает словрь на пары (ключ, значение)
+        for key, value in new_user.model_dump().items(): # items построчно разбивает словрь на пары (ключ, значение)
             if hasattr(user, key) and value is not None: # если в user(в бд) есть такое поле
                 setattr(user, key, value)                # то задаем значение для поля 
 
