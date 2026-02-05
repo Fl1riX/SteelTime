@@ -8,6 +8,7 @@ from src.presentation.api.v1.endpoints import router as endpoints_router
 from src.presentation.api.v1.auth.auth import router as auth_router
 from src.logger import logger
 from src.limiter import limiter
+from src.presentation.middlewares import MetricsMiddleware
 
 app = FastAPI(
     title="SteelTime", 
@@ -18,6 +19,7 @@ app = FastAPI(
     openapi_url="/openapi.json"
 )
 app.state.limiter = limiter
+app.add_middleware(MetricsMiddleware)
 app.add_middleware(SlowAPIMiddleware)
 app.include_router(endpoints_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")

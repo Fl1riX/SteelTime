@@ -18,8 +18,6 @@ async def get_service(
     service_id: int, 
     db: AsyncSession = Depends(get_db)
 ):
-    logger.info(f"GET: Получен запрос: GET /services/{service_id}")
-    
     logger.info(f"GET: Поиск услуги с id: {service_id} в бд...")
     service = await ServiceService.find_service_by_id(id=service_id, db=db)
     
@@ -38,7 +36,6 @@ async def create_service(
     current_user_id: int = Depends(get_current_user_id), 
     db: AsyncSession = Depends(get_db)
 ):
-    logger.info("Получен запрос: POST /services/")
     logger.info("POST: Проверка наличия услуги в бд...")
     existing = await ServiceService.find_by_name(name=service.name, address=service.address, current_user_id=current_user_id, db=db)
     
@@ -59,7 +56,6 @@ async def delete_service(
     current_user_id: int = Depends(get_current_user_id), 
     db: AsyncSession = Depends(get_db)
 ):
-    logger.info(f"DELETE: Получен запрос: DELETE /services/{service_id}")
     logger.info(f"DELETE: Проверка наличия услуги с id: {service_id} в бд...")
     
     service = await ServiceService.find_service_by_id(id=service_id, db=db)
@@ -85,7 +81,6 @@ async def update_service(
     current_user_id: int = Depends(get_current_user_id), 
     db: AsyncSession = Depends(get_db)
 ):
-    logger.info(f"PUT: Получен запрос: PUT /services/{service_id}")
     logger.info("PUT: Проверка наличия услуги в бд...")
     
     service = await ServiceService.find_service_by_id(id=service_id, db=db)

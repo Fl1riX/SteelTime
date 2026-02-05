@@ -19,8 +19,6 @@ async def get_user(
     current_user_id: int = Depends(get_current_user_id), 
     db: AsyncSession = Depends(get_db)
 ):
-    logger.info(f"GET: Получен запрос: GET /users/{user_id}")
-    
     logger.info("Аутентификация пользователя")
     if user_id != current_user_id:
         logger.warning(f"user_id: {current_user_id} пытается получить данные чужого аккаунта: {user_id}")
@@ -60,8 +58,6 @@ async def update_user(
     current_user_id: int = Depends(get_current_user_id), 
     db: AsyncSession = Depends(get_db)
 ):
-    logger.info(f"PUT: Получен запрос: PUT /users/{user_id}")
-    
     logger.info("Аутентификация пользователя")
     if user_id != current_user_id:
         logger.warning(f"user_id: {current_user_id} пытается изменить дынные чужого аккаунта: {user_id}")
@@ -87,9 +83,7 @@ async def delet_user(
     user_id: int, 
     current_user_id: int = Depends(get_current_user_id), 
     db: AsyncSession = Depends(get_db)
-):
-    logger.info(f"DELETE: Получен запрос: DELETE /users/{user_id}")
-    
+):  
     logger.info("Аутентификация пользователя")
     if user_id != current_user_id:
         logger.warning(f"user_id: {current_user_id} пытается удалить чужой аккаунт: {user_id}")

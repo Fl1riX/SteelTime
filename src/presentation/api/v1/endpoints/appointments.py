@@ -19,7 +19,6 @@ async def get_appointment(
     current_user_id: int = Depends(get_current_user_id), 
     db: AsyncSession = Depends(get_db)
 ):
-    logger.info(f"Поступил запрос: GET /appointments/{appointment_id}")
     logger.info(f"GET: Поиск записи с id: {appointment_id} в базе данных...")
     
     appointment = await AppointmentService.get_appointment_by_id(db=db, appointment_id=appointment_id)
@@ -43,7 +42,6 @@ async def create_appointment(
     current_user_id: int = Depends(get_current_user_id), 
     db: AsyncSession = Depends(get_db)
 ):
-    logger.info("Поступил запрос: POST /appointments/")
     logger.info("POST: Проверка наличия записи в бд...")
     
     existing = await AppointmentService.find_appointment(db=db, appointment=appointment, current_user_id=current_user_id)
@@ -65,7 +63,6 @@ async def update_appointment(
     current_user_id: int = Depends(get_current_user_id), 
     db: AsyncSession = Depends(get_db)
 ):
-    logger.info(f"Поступил запрос: PUT /appointments/{appointment_id}")
     logger.info(f"PUT: Поиск записи с id: {appointment_id} в базе данных...")
     
     appointment = await AppointmentService.get_appointment_by_id(db=db, appointment_id=appointment_id)
@@ -95,7 +92,6 @@ async def delete_appointment(
     current_user_id: int = Depends(get_current_user_id), 
     db: AsyncSession = Depends(get_db)
 ):
-    logger.info(f"Поступил запрос: DELETE /appointments/{appointment_id}")
     logger.info(f"DELETE: Поиск записи с id: {appointment_id} в базе данных...")
     
     appointment = await AppointmentService.get_appointment_by_id(db=db, appointment_id=appointment_id)
