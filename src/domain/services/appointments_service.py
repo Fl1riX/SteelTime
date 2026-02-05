@@ -1,8 +1,8 @@
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.schemas import appointment_schema
-from src.db.models import Appointment
+from src.shared.schemas import appointment_schema
+from src.domain.db.models import Appointment
 from src.logger import logger
 
 class AppointmentService:

@@ -4,14 +4,14 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from fastapi.security import OAuth2PasswordRequestForm
 
-from src.api.v1.auth.jwt_handler import create_access_token, verify_password, hash_password
-from src.db.database import get_db
-from src.services.user_service import UserService
+from src.presentation.api.v1.auth.jwt_handler import create_access_token, verify_password, hash_password
+from src.domain.db.database import get_db
+from src.domain.services.user_service import UserService
 from src.logger import logger
-from src.services.exceptions import UserNotFound
-from src.api.v1.auth.dependencies import get_current_user_id
-from src.schemas import user_schema
-from src.api.v1.exceptions import ConflictError, Unauthorized, NoAccess, NotFound
+from src.domain.services.exceptions import UserNotFound
+from src.presentation.api.v1.auth.dependencies import get_current_user_id
+from src.shared.schemas import user_schema
+from src.presentation.api.v1.exceptions import ConflictError, Unauthorized, NoAccess, NotFound
 
 router = APIRouter(prefix="/auth", tags=["Авторизация"])
 limiter = Limiter(key_func=get_remote_address)

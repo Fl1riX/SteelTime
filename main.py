@@ -4,8 +4,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi.middleware import SlowAPIMiddleware
 
-from src.api.v1.endpoints import router as endpoints_router
-from src.api.v1.auth.auth import router as auth_router
+from src.presentation.api.v1.endpoints import router as endpoints_router
+from src.presentation.api.v1.auth.auth import router as auth_router
 from src.logger import logger
 from src.limiter import limiter
 

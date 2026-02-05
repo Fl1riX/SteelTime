@@ -1,13 +1,13 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, Request
 
-from src.schemas import appointment_schema
+from src.shared.schemas import appointment_schema
 from src.logger import logger
-from src.db.database import get_db
+from src.domain.db.database import get_db
 from src.limiter import limiter
-from src.services.appointments_service import AppointmentService
-from src.api.v1.auth.dependencies import get_current_user_id
-from src.api.v1.exceptions import NotFound, NoAccess, ConflictError
+from src.domain.services.appointments_service import AppointmentService
+from src.presentation.api.v1.auth.dependencies import get_current_user_id
+from src.presentation.api.v1.exceptions import NotFound, NoAccess, ConflictError
 
 router = APIRouter(prefix="/appointments", tags=["Записи"])
 

@@ -2,9 +2,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.db.database import get_db
-from src.api.v1.auth.jwt_handler import decode_token
-from src.services.user_service import UserService
+from src.domain.db.database import get_db
+from src.presentation.api.v1.auth.jwt_handler import decode_token
+from src.domain.services.user_service import UserService
 from src.logger import logger
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login") # указываем URL эндпоинта логина

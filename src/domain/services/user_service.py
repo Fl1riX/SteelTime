@@ -1,10 +1,10 @@
-from src.schemas import user_schema
+from src.shared.schemas import user_schema
 from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.db.models import User
+from src.domain.db.models import User
 from src.logger import logger
-from src.api.v1.auth.jwt_handler import hash_password
-from src.services.exceptions import UserNotFound
+from src.presentation.api.v1.auth.jwt_handler import hash_password
+from src.domain.services.exceptions import UserNotFound
 
 class UserService:
     @staticmethod

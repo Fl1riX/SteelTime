@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from sqlalchemy.orm import declarative_base
 
 # Нужно перейти на 2 уровня вверх до корня проекта
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 DB_PATH = BASE_DIR / "Booking-System.db"
 DB_URL = f"sqlite+aiosqlite:///{DB_PATH}"
