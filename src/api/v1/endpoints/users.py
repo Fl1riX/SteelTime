@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, Request
 
 from src.schemas import user_schema
 from src.logger import logger
@@ -7,6 +7,7 @@ from src.db.database import get_db
 from src.api.v1.auth.dependencies import get_current_user_id
 from src.services.user_service import UserService
 from src.limiter import limiter
+from src.api.v1.exceptions import NoAccess, NotFound
 
 router = APIRouter(prefix="/users", tags=["Пользователи"])
 
@@ -23,17 +24,14 @@ async def get_user(
     logger.info("Аутентификация пользователя")
     if user_id != current_user_id:
         logger.warning(f"user_id: {current_user_id} пытается получить данные чужого аккаунта: {user_id}")
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="У вас нет доступа к этому аккаунту"
-        )
+        raise NoAccess("У вас нет доступа к этому аккаунту") 
     
     logger.info(f"GET: Проверка наличия пользователя с id: {user_id} в бд...")
     user = await UserService.find_user_by_id(id=user_id, db=db)
     
     if not user:
         logger.error(f"GET: Пользователь с id: {user_id} не найден")
-        raise HTTPException(status_code=404, detail="Пользователь не найден")
+        raise NotFound("Пользователь не найден")
     
     logger.info(f"GET: Найден пользователь с id: {user_id} ✅")
     return user
@@ -49,6 +47,8 @@ async def check_user_telegram_connection(
     if not connected:
         logger.info(f"Пользователь с id: {telegram_id} не привязан к боту")
         return {"connected": False}
+    
+    logger.info(f"Обнаружене привязка telegram польователя с id: {telegram_id}")
     return {"connected": True}
 
 @router.put("/{user_id}", response_model=user_schema.UserUpdate)
@@ -65,17 +65,14 @@ async def update_user(
     logger.info("Аутентификация пользователя")
     if user_id != current_user_id:
         logger.warning(f"user_id: {current_user_id} пытается изменить дынные чужого аккаунта: {user_id}")
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="У вас нет доступа к этому аккаунту"
-        )
-    
+        raise NoAccess("У вас нет доступа к этому аккаунту")
+        
     logger.info(f"PUT: Проверка наличия пользователя с id: {user_id} в бд...")   
     user = await UserService.find_user_by_id(id=user_id, db=db)
     
     if not user:
         logger.error(f"PUT: ❌ Пользователь с id: {user_id} не найден в бд ❌")
-        raise HTTPException(status_code=404, detail="Нельзя обновить даные. Такого пользователя не существует")
+        raise NotFound("Нельзя обновить даные. Такого пользователя не существует")
     
     logger.info(f"PUT: Пользователь с id: {user_id} найден в бд. Обновление данных...")
     
@@ -96,17 +93,14 @@ async def delet_user(
     logger.info("Аутентификация пользователя")
     if user_id != current_user_id:
         logger.warning(f"user_id: {current_user_id} пытается удалить чужой аккаунт: {user_id}")
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="У вас нет доступа к этому аккаунту"
-        )
+        raise NoAccess("У вас нет доступа к этому аккаунту")
     
     logger.info(f"DELETE: Проверка наличия пользователя с id: {user_id} в бд...")
     user = await UserService.find_user_by_id(id=user_id, db=db)
     
     if not user:
         logger.error(f"DELETE: ❌ Пользователь с id: {user_id} не найден в бд ❌")
-        raise HTTPException(status_code=404, detail="Такого пользователя не существует")
+        raise NotFound("Такого пользователя не существует")
     
     logger.info(f"DELETE: Пользователь с id: {user_id} найден в бд. Удаляем данные...")
     await UserService.delete_user(db=db, user=user)

@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, Request
 
 from src.schemas import appointment_schema
 from src.logger import logger
@@ -7,6 +7,7 @@ from src.db.database import get_db
 from src.limiter import limiter
 from src.services.appointments_service import AppointmentService
 from src.api.v1.auth.dependencies import get_current_user_id
+from src.api.v1.exceptions import NotFound, NoAccess, ConflictError
 
 router = APIRouter(prefix="/appointments", tags=["Записи"])
 
@@ -24,16 +25,13 @@ async def get_appointment(
     appointment = await AppointmentService.get_appointment_by_id(db=db, appointment_id=appointment_id)
     if not appointment:
         logger.error(f"GET: ❌ Запись с id: {appointment_id} не найдена в бд ❌")
-        raise HTTPException(status_code=404, detail="Запись не найдена")
+        raise NotFound("Запись не найдена")
 
     logger.info(f"GET: Запись с id: {appointment_id} успешно найдена в бд ✅")
 
     if current_user_id != appointment.user_id and current_user_id != appointment.entrepreneur_id:
         logger.warning(f"Пользователь с id: {current_user_id} пытается получить данные о чужой записи")
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="У вас нет доступа к этим данным"
-        )
+        raise NoAccess
 
     return appointment
 
@@ -52,7 +50,7 @@ async def create_appointment(
     
     if existing:
         logger.error("POST: ❌ Такая запись уже существует ❌")
-        raise HTTPException(status_code=400, detail="Такая запись уже существует")
+        raise ConflictError("Такая запись уже существует")
     
     new_appointment = await AppointmentService.create_appointment(db=db, appointment=appointment, current_user_id=current_user_id)
         
@@ -74,14 +72,11 @@ async def update_appointment(
     
     if not appointment:
         logger.error(f"PUT: ❌ Запись с id: {appointment_id} не найдена в бд ❌")
-        raise HTTPException(status_code=404, detail="Такая запись не найдена")
+        raise NotFound("Такая запись не найдена")
     
     if current_user_id != appointment.entrepreneur_id:
         logger.warning(f"Пользователь с id: {current_user_id} пытается изменить данные о записи({appointment_id}) предпринимателя: {appointment.entrepreneur_id}")
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="У вас нет доступа к этой записи"
-        )
+        raise NoAccess("У вас нет доступа к этой записи")
     
     await AppointmentService.update_appointment(
         db=db, 
@@ -107,14 +102,11 @@ async def delete_appointment(
     
     if not appointment:
         logger.error(f"DELETE: ❌ Запись с id: {appointment_id} не найдена в бд ❌")
-        raise HTTPException(status_code=404, detail="Такая запись не найдена")
+        raise NotFound("Такая запись не найдена")
     
     if current_user_id != appointment.entrepreneur_id and current_user_id != appointment.user_id:
         logger.warning(f"Пользователь с id: {current_user_id} пытается удалить чужую запись: {appointment_id}")
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="У вас нет доступа к этой записи"
-        )
+        raise NoAccess("У вас нет доступа к этой записи")
     
     await AppointmentService.delete_appointment(db=db, appointment=appointment, appointment_id=appointment_id)
     return {"success": True}

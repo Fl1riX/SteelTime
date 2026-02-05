@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, Request
 
 from src.schemas import service_schema
 from src.logger import logger
@@ -7,6 +7,7 @@ from src.db.database import get_db
 from src.services.service_service import ServiceService
 from src.api.v1.auth.dependencies import get_current_user_id
 from src.limiter import limiter
+from src.api.v1.exceptions import NotFound, ConflictError, NoAccess
 
 router = APIRouter(prefix="/services", tags=["Услуги"])
 
@@ -24,7 +25,7 @@ async def get_service(
     
     if not service:
         logger.error(f"GET: Услуга с id: {service_id} не найдена")
-        raise HTTPException(status_code=404, detail="Такая услуга не найдена")
+        raise NotFound("Такая услуга не найдена")
     
     logger.info(f"GET: Услуга с id: {service_id} найдена ✅")
     return service
@@ -43,7 +44,7 @@ async def create_service(
     
     if existing:
         logger.error("POST: такая услуга уже существует")
-        raise HTTPException(status_code=400, detail="Такая услуга уже существует")
+        raise ConflictError("Такая услуга уже существует")
     
     logger.info("POST: Услуга не найдена в бд ✅. Запись данных...")
     new_service = await ServiceService.create_service(service=service, current_user_id=current_user_id, db=db)
@@ -65,14 +66,11 @@ async def delete_service(
     
     if not service:
         logger.error("DELETE: Такой услуги не существует в бд")
-        raise HTTPException(status_code=404, detail="Такой услуги не существует")
+        raise NotFound("Такой услуги не существует")
     
     if service.entrepreneur_id != current_user_id:
         logger.warning(f"Пользователь  с id: {current_user_id} пытается удалить услугу пользователя: {service.entrepreneur_id}")
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="У вас нет доступа к этой услуге"
-        )
+        raise NoAccess("У вас нет доступа к этой услуге")
     
     await ServiceService.delete_service(service=service, db=db)
     
@@ -94,14 +92,11 @@ async def update_service(
     
     if not service:
         logger.error("PUT: Такая услуга не найдена")
-        raise HTTPException(status_code=404, detail="Такая услуга не найдена")
+        raise NotFound("Такая услуга не найдена")
     
     if service.entrepreneur_id != current_user_id:
         logger.warning(f"Пользователь  с id: {current_user_id} пытается удалить услугу пользователя: {service.entrepreneur_id}")
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="У вас нет доступа к этой услуге"
-        )
+        raise NoAccess("У вас нет доступа к этой услуге")
     
     logger.info("PUT: Услуга найдена ✅. Обновление данных...")
     
