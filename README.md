@@ -1,3 +1,11 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=flat&logo=python&logoColor=white)
+![Pydantic](https://img.shields.io/badge/Pydantic-E92063?style=flat&logo=python&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
+![Alembic](https://img.shields.io/badge/Alembic-408EE0?style=flat&logo=git&logoColor=white)
+![Aiogram](https://img.shields.io/badge/Aiogram-2CA5E0?style=flat&logo=telegram&logoColor=white)
+
 # ⚙️ SteelTime
 
 > **Умная система онлайн-записи на услуги**  
@@ -39,6 +47,7 @@
 - **SQLAlchemy** — работа с базой данных  
 - **JWT** — авторизация и аутентификация  
 - **Pydantic** — валидация данных  
+- **Docker** - чтобы API одинаково работал везде без проблем с версиями Python, библиотеками и настройками окружения
 
 ---
 
@@ -46,30 +55,35 @@
 
 ```
 SteelTime/
-├── main.py                    # Точка входа в приложение
-├── config.py                  # Конфигурация проекта
-├── logger.py                  # Логирование
-├── limiter.py                 # Ограничение запросов
-│
-├── auth/                      # Модуль авторизации
-│   ├── auth.py
-│   ├── dependencies.py
-│   └── jwt_handler.py
-│
-├── routes/                    # API эндпоинты
-│   ├── users.py
-│   ├── services.py
-│   └── appointments.py
-│
-├── schemas/                   # Pydantic-схемы
-│   ├── user_schema.py
-│   ├── service_schema.py
-│   └── appointment_schema.py
-│
-└── services/                  # Бизнес-логика
-    ├── user_service.py
-    ├── service_service.py
-    └── appointments_service.py
+├── alembic/                   # Миграции базы данных
+│   ├── versions/              # Файлы миграций
+│   └── __pycache__/
+├── src/                       # Исходный код
+│   ├── domain/                # Доменный слой (бизнес-логика)
+│   │   ├── db/                # Работа с БД (модели, репозитории)
+│   │   ├── services/          # Доменные сервисы
+│   │   └── __pycache__/
+│   ├── infrastructure/        # Инфраструктурный слой
+│   │   └── tasks/             # Фоновые задачи
+│   ├── presentation/          # Слой представления (UI/API)
+│   │   ├── api/               # FastAPI веб-API
+│   │   │   ├── v1/            # API версия 1
+│   │   │   │   ├── auth/      # Авторизация
+│   │   │   │   ├── endpoints/ # API эндпоинты
+│   │   │   │   └── __pycache__/
+│   │   │   └── __pycache__/
+│   │   ├── bot/               # Telegram бот
+│   │   │   ├── core/          # Ядро бота
+│   │   │   ├── handlers/      # Обработчики команд
+│   │   │   ├── keyboards/     # Клавиатуры бота
+│   │   │   └── __pycache__/
+│   │   └── __pycache__/
+│   ├── shared/                # Общие компоненты
+│   │   ├── schemas/           # Pydantic схемы (DTO)
+│   │   └── __pycache__/
+│   └── __pycache__/
+├── tests/                     # Тесты
+└── __pycache__/               
 ```
 
 ---
@@ -98,7 +112,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 ### 4. Запустите сервер
 ```bash
-uvicorn src.main:app --reload
+uvicorn src.main:app
 ```
 
 ### 5. Откройте документацию API
