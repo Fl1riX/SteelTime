@@ -19,7 +19,6 @@ limiter = Limiter(key_func=get_remote_address)
 @router.post("/register", response_model=user_schema.UserRegisterResponse)
 @limiter.limit("5/minute")
 async def create_user(request: Request, user: user_schema.UserRegister, db: AsyncSession = Depends(get_db)):
-    logger.info("Получен запрос: POST /auth/register")
     logger.info("POST: Проверка наличия пользователя в бд...")
     
     if await UserService.find_user_registration(user=user, db=db):
@@ -44,7 +43,6 @@ async def create_user(request: Request, user: user_schema.UserRegister, db: Asyn
 @router.post("/login", response_model=user_schema.UserLoginResponse)
 @limiter.limit("5/minute")
 async def login_user(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
-    logger.info("Получен запрос: POST /auth/login")
     logger.info("POST: Проверка наличия пользователя в бд...")
     
     user_data = user_schema.UserLogin(
@@ -80,7 +78,6 @@ async def change_password(
     db: AsyncSession = Depends(get_db)
 ):
     try:
-        logger.info("Получен новый запрос: POST /auth/change_password")
         logger.info("Проверка существования пользователя в бд...")
         user = await UserService.check_user_exists(user=user_data, db=db)
         

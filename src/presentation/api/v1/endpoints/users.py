@@ -78,7 +78,7 @@ async def update_user(
 
 @router.delete("/{user_id}")
 @limiter.limit("5/minute")
-async def delet_user(
+async def delete_user(
     request: Request,
     user_id: int, 
     current_user_id: int = Depends(get_current_user_id), 
