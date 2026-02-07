@@ -118,6 +118,11 @@ uvicorn src.main:app
 ### 5. Откройте документацию API
 Перейдите по адресу: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
+### 6. Запустите Telegram бота 
+```bash
+python -m src.presentation.bot.handlers.bot
+```
+
 ---
 
 ## 📖 Примеры использования
@@ -163,8 +168,7 @@ curl -X POST "http://127.0.0.1:8000/appointments/" \
 
 Если у вас есть вопросы или предложения — пишите!
 
-**GitHub:** [@your-username](https://github.com/your-username)  
-**Email:** contact@steeltime.ru
+**GitHub:** [@Fl1riX](https://github.com/Fl1riX) 
 
 ---
 
