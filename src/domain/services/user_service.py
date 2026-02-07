@@ -22,15 +22,15 @@ class UserService:
         return registred
     
     @staticmethod
-    async def check_telegram_connection(tg_id: str, db: AsyncSession):
+    async def check_telegram_connection(tg_id: str, db: AsyncSession) -> User | None:
         result = await db.execute(select(User).where(
             User.telegram_id == tg_id
         ))
-        telegram_id = result.scalar()
-        if telegram_id is None:
+        user_info = result.scalar()
+        if user_info is None:
             logger.info(f"Пользователь с id: {tg_id} не привязал бота")
-            return False
-        return True
+            return user_info
+        return user_info
         
     @classmethod
     async def check_user_exists(cls, user: user_schema.UserLogin | user_schema.ChangePassword, db: AsyncSession):

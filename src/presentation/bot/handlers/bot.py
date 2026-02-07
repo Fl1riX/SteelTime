@@ -2,8 +2,8 @@ import asyncio
 
 from aiogram import Bot, Dispatcher
 
-from src.bot.core.config import TELEGRAM_BOT_TOKEN
-from src.bot.handlers.start import router as start_router
+from src.presentation.bot.core.config import TELEGRAM_BOT_TOKEN
+from .start import router as start_router
 from src.logger import logger
 
 bot = Bot(token=str(TELEGRAM_BOT_TOKEN))

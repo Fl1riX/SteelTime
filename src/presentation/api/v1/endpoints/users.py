@@ -42,12 +42,15 @@ async def check_user_telegram_connection(
     db: AsyncSession = Depends(get_db)
 ):
     connected = await UserService.check_telegram_connection(tg_id=telegram_id, db=db)
-    if not connected:
+    if connected is None:
         logger.info(f"Пользователь с id: {telegram_id} не привязан к боту")
         return {"connected": False}
     
     logger.info(f"Обнаружене привязка telegram польователя с id: {telegram_id}")
-    return {"connected": True}
+    return {
+        "connected": True,
+        "is_entrepreneur": connected.is_entrepreneur
+    }
 
 @router.put("/{user_id}", response_model=user_schema.UserUpdate)
 @limiter.limit("5/minute")
