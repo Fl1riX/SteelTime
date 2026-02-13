@@ -2,6 +2,7 @@ import re
 
 from pydantic.functional_validators import BeforeValidator
 from typing import Annotated
+from src.logger import logger
 
 # проверяем номер телефона
 def validate_phone(value: str) -> str:
@@ -45,6 +46,7 @@ Email = Annotated[str, BeforeValidator(validate_email)]
 
 def validate_login(login: str) -> str:
     """Валидирует login, принимая email, телефон или telegram_id"""
+    logger.info(f"Валидация логина: {login}...")
     if re.match(r"^\+[0-9]{11,16}$", login):
         return login
     if login.isdigit():
@@ -54,6 +56,7 @@ def validate_login(login: str) -> str:
         email = validate_email(login)
         return email
     
+    logger.warning("Login должен быть email, номером телефона (+...) или Telegram ID")
     raise ValueError("Login должен быть email, номером телефона (+...) или Telegram ID")
 
 Login = Annotated[str, BeforeValidator(validate_login)]

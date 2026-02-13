@@ -33,7 +33,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
         response_size = len(response.body) if hasattr(response, "body") and response.body else 0 # размер тела ответа
 
         logger.info(
-            f"RESPONSE | {request.method} {request.url.path} |"
+            f"RESPONSE | {request.method} {request.url.path} | "
             f"{response.status_code} | {process_time:.3f}s | {response_size}b"
         )
 

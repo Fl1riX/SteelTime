@@ -3,13 +3,14 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 
 link_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Привязать аккаунт", callback_data="link_btn")],
+        [InlineKeyboardButton(text="🔗 Привязать аккаунт", url="")],
 ])
 
 user_start_keyboard = ReplyKeyboardMarkup(
         keyboard=[
                 [KeyboardButton(text="🚹 Мой профиль 💎")],
                 [KeyboardButton(text="🕓 Мои записи 🗓️")],
+                [KeyboardButton(text="☎️ Поддержка 📩")],
                 [KeyboardButton(text="📲 Управление уведомлениями ✉️")]  
         ],
         resize_keyboard=True,
@@ -22,6 +23,7 @@ entrepreneur_start_keyboard = ReplyKeyboardMarkup(
                 [KeyboardButton(text="🕓 Мои записи 🗓️")],
                 [KeyboardButton(text="💸 Мои услуги 🗂️")],
                 [KeyboardButton(text="🌐 Мои приемы ✅")],
+                [KeyboardButton(text="☎️ Поддержка 📩")],
                 [KeyboardButton(text="📲 Управление уведомлениями ✉️")] 
         ],
         resize_keyboard=True,

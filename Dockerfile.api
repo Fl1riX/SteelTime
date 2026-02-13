@@ -8,10 +8,14 @@ WORKDIR /app
 # Копируем только requrements.txt(кэшируется)
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+# обновление pip и установка зависимостей
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Копируем весь код
 COPY . .
+
+RUN rm -rf /app/src/bot
 
 # Открываем порт
 EXPOSE 8000

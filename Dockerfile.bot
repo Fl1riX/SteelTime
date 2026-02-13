@@ -1,0 +1,22 @@
+FROM python:3.13-slim
+# пока не рабочий
+
+WORKDIR /app
+
+# Установка системных зависимостей
+RUN apt-get update && apt-get install -y \
+    gcc \ 
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+
+# обновление pip и установка зависимостей
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+COPY src/presentation/bot ./src/presentation/bot
+COPY src/logger.py ./src/
+COPY src/domain/services ./src/domain/services
+COPY src/shared/ ./src/shared/
+
+CMD ["python", "-m", "src.presentation.bot.handlers.bot"]

@@ -1,4 +1,4 @@
-from sqlalchemy import String, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import String, DateTime, Boolean, Integer, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship, Mapped, mapped_column, validates
 from typing import List
 from .database import Base
@@ -8,14 +8,15 @@ from src.logger import logger
 class User(Base): # пользователь
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     telegram_id: Mapped[str] = mapped_column(String(25), unique=True, index=True, nullable=True) # для поиска использует B-дерево, что ускоряет его
+    telegram_linked_at: Mapped[datetime | None] = mapped_column(DateTime, default=None)
     username: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     phone: Mapped[str] = mapped_column(String(30), unique=True, nullable=False, index=True)
     email: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     password: Mapped[str] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
-    is_entrepreneur: Mapped[bool] = mapped_column(default=False)
+    is_entrepreneur: Mapped[bool] = mapped_column(Boolean, default=False)
     full_name: Mapped[str | None] = mapped_column(String(150))
     my_appointments: Mapped[List["Appointment"]] = relationship(
                                                               back_populates="user",
@@ -56,9 +57,9 @@ class Service(Base): # услуга
       ),
     )
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
-    price: Mapped[int] = mapped_column(nullable=False)
+    price: Mapped[int] = mapped_column(Integer, nullable=False)
     description: Mapped[str] = mapped_column(String(2000))
     duration: Mapped[str] = mapped_column(String(10), nullable=False) # продолжительость в часах
     address: Mapped[str] = mapped_column(String(100))
@@ -86,7 +87,7 @@ class Appointment(Base): # запись
       ),
     )
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     comment: Mapped[str] = mapped_column(String(1200))
     service_id: Mapped[int] = mapped_column(ForeignKey("services.id")) # сохраняем какую услугу оказываем, чтобы service могла сослаться на таблицу
@@ -115,3 +116,14 @@ class Appointment(Base): # запись
       elif value < datetime.utcnow():
         logger.warning("Дата оказания услуги не может быть в прошлом")
         raise ValueError("Дата оказания услуги не может быть в прошлом")
+      
+class MagicTokens(Base): # магические токены для привязки аккаунта к телеграм боту
+    __tablename__="magic_tokens"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    telegram_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    token: Mapped[str] = mapped_column(String(64), nullable=False, unique=True) 
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    used: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+  

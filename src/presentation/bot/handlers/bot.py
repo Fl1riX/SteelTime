@@ -4,12 +4,14 @@ from aiogram import Bot, Dispatcher
 
 from src.presentation.bot.core.config import TELEGRAM_BOT_TOKEN
 from .start import router as start_router
+from .user_menu import router as user_menu_router
 from src.logger import logger
 
 bot = Bot(token=str(TELEGRAM_BOT_TOKEN))
 dp = Dispatcher()
 
 dp.include_router(start_router)
+dp.include_router(user_menu_router)
 
 async def main():
     await bot.delete_webhook(drop_pending_updates=True)
@@ -23,4 +25,4 @@ if __name__ == "__main__":
         logger.info("Запуск бота...")
         asyncio.run(main())
     except KeyboardInterrupt:
-        logger.info("⛔ Бот останлен пользователем ⛔")
+        logger.info("⛔ Бот остановлен пользователем ⛔")

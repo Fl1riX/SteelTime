@@ -1,0 +1,9 @@
+__pycache__/
+.gitignore
+*.md
+.venv/
+.vscode/
+.mypy_cache/
+tests/
+db_test_data.py
+LICENSE

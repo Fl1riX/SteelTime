@@ -7,21 +7,59 @@ from fastapi.security import OAuth2PasswordRequestForm
 from src.presentation.api.v1.auth.jwt_handler import create_access_token, verify_password, hash_password
 from src.domain.db.database import get_db
 from src.domain.services.user_service import UserService
+from src.domain.services.auth_service import AuthService
+from src.domain.services.tg_link_service import TgLinkService
 from src.logger import logger
 from src.domain.services.exceptions import UserNotFound
 from src.presentation.api.v1.auth.dependencies import get_current_user_id
-from src.shared.schemas import user_schema
-from src.presentation.api.v1.exceptions import ConflictError, Unauthorized, NoAccess, NotFound
+from src.shared.schemas import auth_schema
+from src.presentation.api.v1.exceptions import ConflictError, Unauthorized, NoAccess, NotFound, NotCorrect
 
 router = APIRouter(prefix="/auth", tags=["Авторизация"])
 limiter = Limiter(key_func=get_remote_address)
 
-@router.post("/register", response_model=user_schema.UserRegisterResponse)
+@router.post("/login-link")
+@limiter.limit("3/minute")
+async def login_with_link(
+    request: Request,
+    login_data: auth_schema.UserLogin,
+    token: str,
+    db: AsyncSession = Depends(get_db)
+):
+    user_data = auth_schema.UserLogin(
+        login=login_data.login,
+        password=login_data.password
+    )
+    user = await UserService.check_user_exists(user=user_data, db=db)
+    
+    # проверяем регистрацию пользователя
+    if not user:
+        logger.error("POST: Такой пользователь не существует в бд")
+        raise Unauthorized("Неверный email или пароль")
+    
+    # проверяем корректность введенного пароля
+    if not verify_password(password=login_data.password, hashed_password=user.password):
+        logger.info(f"Введен не верный пароль для пользователя: {user_data.login}")
+        raise Unauthorized("Неверный email или пароль")  
+    
+    logger.info(f"Поиск токена в бд: {token}")
+    link_token = await TgLinkService.check_magic_token(token, db)
+    
+    if not link_token:
+        logger.info(f"Magic токен не найден: {token}")
+        raise NotCorrect("Недействительный токен")
+    
+    await TgLinkService.make_token_used(db=db, token=token)
+    
+    return {"success": True}
+    
+
+@router.post("/register", response_model=auth_schema.UserRegisterResponse)
 @limiter.limit("5/minute")
-async def create_user(request: Request, user: user_schema.UserRegister, db: AsyncSession = Depends(get_db)):
+async def create_user(request: Request, user: auth_schema.UserRegister, db: AsyncSession = Depends(get_db)):
     logger.info("POST: Проверка наличия пользователя в бд...")
     
-    if await UserService.find_user_registration(user=user, db=db):
+    if await AuthService.find_user_registration(user=user, db=db):
         logger.error("POST: Такой пользователь уже существует в бд")
         raise ConflictError("Такой пользователь уже существует")
     
@@ -40,12 +78,12 @@ async def create_user(request: Request, user: user_schema.UserRegister, db: Asyn
             "token_type": "Bearer"
             }
     
-@router.post("/login", response_model=user_schema.UserLoginResponse)
+@router.post("/login", response_model=auth_schema.UserLoginResponse)
 @limiter.limit("5/minute")
 async def login_user(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
     logger.info("POST: Проверка наличия пользователя в бд...")
     
-    user_data = user_schema.UserLogin(
+    user_data = auth_schema.UserLogin(
         login=form_data.username,
         password=form_data.password
     )
@@ -73,7 +111,7 @@ async def login_user(request: Request, form_data: OAuth2PasswordRequestForm = De
 @limiter.limit("5/minute")
 async def change_password(
     request: Request,
-    user_data: user_schema.ChangePassword, 
+    user_data: auth_schema.ChangePassword, 
     current_user_id: int = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db)
 ):
@@ -95,9 +133,10 @@ async def change_password(
             raise NoAccess("Отказано в доступе, введен неверный пароль")
         
         logger.info("Обновление пароля пользователя...")
-        await UserService.update_user_password(db=db, user_data=user_data)
+        await AuthService.update_user_password(db=db, user_data=user_data)
         logger.info("Пароль успешно обновлен ✅")
         
         return {"success" : True}
     except UserNotFound:
         raise NotFound("Пользователь не найден")
+    
