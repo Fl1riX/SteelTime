@@ -3,6 +3,7 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi.middleware import SlowAPIMiddleware
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from src.presentation.api.v1.endpoints import router as endpoints_router
 from src.presentation.api.v1.auth.auth import router as auth_router
@@ -10,6 +11,7 @@ from src.presentation.api.v1.auth.tg_link import router as tg_link_router
 from src.logger import logger
 from src.limiter import limiter
 from src.presentation.middlewares import MetricsMiddleware
+from src.infrastructure.tasks.cleanup_magic_tokens import cleanup_telegram_tokens
 
 app = FastAPI(
     title="SteelTime", 
@@ -39,6 +41,16 @@ app.add_middleware(
     ],
     allow_credentials=True
 )
+
+scheduler = AsyncIOScheduler() # Планировщик
+@app.on_event("startup")
+async def startup():
+    scheduler.add_job(
+        cleanup_telegram_tokens,
+        "interval",
+        minutes=5
+    )
+    scheduler.start()
 
 @app.get("/")
 @limiter.limit("5/minute")
