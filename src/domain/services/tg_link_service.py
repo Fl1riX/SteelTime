@@ -52,20 +52,20 @@ class TgLinkService:
         
         logger.info(f"Привязка удалась: user={user.id}, tg={link_token.telegram_id}")
         
-    @staticmethod
-    async def make_token_used(db: AsyncSession, token: str):
-        """Меняем значение токена на использованное"""
-        logger.info(f"Пометка токена: {token} как использованного...")
-        result = await db.execute(select(MagicTokens).where(
-            MagicTokens.token == token
-        ))
-        entry = result.scalars().first()
-        if not entry:
-            logger.warning(f"Токен: {token} не найден в таблице MagicTokens")
-            raise ValueError(f"Токен: {token} не найден в таблице MagicTokens")
-        if entry.used:
-            return
-        entry.used = True
-        
-        db.add(entry)
-        await db.commit()
+    #@staticmethod
+    #async def make_token_used(db: AsyncSession, token: str):
+    #    """Меняем значение токена на использованное"""
+    #    logger.info(f"Пометка токена: {token} как использованного...")
+    #    result = await db.execute(select(MagicTokens).where(
+    #        MagicTokens.token == token
+    #    ))
+    #    entry = result.scalars().first()
+    #    if not entry:
+    #        logger.warning(f"Токен: {token} не найден в таблице MagicTokens")
+    #        raise ValueError(f"Токен: {token} не найден в таблице MagicTokens")
+    #    if entry.used:
+    #        return
+    #    entry.used = True
+    #    
+    #    db.add(entry)
+    #    await db.commit()

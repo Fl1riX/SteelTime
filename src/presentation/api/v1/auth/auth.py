@@ -42,14 +42,15 @@ async def login_with_link(
         logger.info(f"Введен не верный пароль для пользователя: {user_data.login}")
         raise Unauthorized("Неверный email или пароль")  
     
-    logger.info(f"Поиск токена в бд: {token}")
+    logger.info(f"Поиск токена в бд: {token}...")
     link_token = await TgLinkService.check_magic_token(token, db)
     
     if not link_token:
         logger.info(f"Magic токен не найден: {token}")
         raise NotCorrect("Недействительный токен")
     
-    await TgLinkService.make_token_used(db=db, token=token)
+    # Привязываем id telegram к аккаунту
+    await TgLinkService.link_account(db=db, link_token=link_token, user=user)
     
     return {"success": True}
     

@@ -5,12 +5,6 @@ from datetime import datetime
 from .types import TgId, Email, PhoneNumber, Login
 from .user_schema import UserPublic
 
-class GenerateMagicLincShema(BaseModel):
-    """Схема для генерации магической ссылки привязки бота к аккаунту"""
-    telegram_id: TgId
-    
-    model_config = ConfigDict(extra='forbid')
-
 class TgLinkSchema(BaseModel):
     """Схема для привязки телеграм бота к профилю"""
     telegram_id: TgId

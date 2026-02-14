@@ -3,7 +3,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 
 link_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🔗 Привязать аккаунт", url="")],
+        [InlineKeyboardButton(text="🔗 Привязать аккаунт", url="http://localhost:8000/api/v1/auth/telegram/generate-link")],
 ])
 
 user_start_keyboard = ReplyKeyboardMarkup(
