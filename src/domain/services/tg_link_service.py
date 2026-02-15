@@ -44,28 +44,37 @@ class TgLinkService:
     @staticmethod
     async def link_account(db: AsyncSession, link_token, user):
         """Привязываем телеграм бота к аккаунту"""
-        if link_token.telegram_id != user.telegram_id:
-            user.telegram_id = link_token.telegram_id
+        if link_token.used:
+            logger.warning(f"Токен уже ииспользован: {link_token}")
+            raise ValueError("Токен уже ииспользован")
+        
+        if user.telegram_id is not None:
+            logger.warning(f"У пользоватьеля: {user.id} уже привязан TG: {user.telegram_id}")
+            raise ValueError("Telegram уже привязан")
+        
+        if link_token.expires_at <= datetime.now(timezone.utc):
+            logger.info(f"Токен: {link_token} просрочен")
+            raise ValueError("Токен просрочен")
+        
+        user.telegram_id = link_token.telegram_id
 
         link_token.used = True
+        link_token.telegram_linked_at = datetime.now(timezone.utc)
         await db.commit()
         
         logger.info(f"Привязка удалась: user={user.id}, tg={link_token.telegram_id}")
+    
+    @staticmethod
+    async def find_token(token: str, db: AsyncSession) -> bool:
+        """Ищет токен в базе данных"""
+        logger.info("Поиск токен в базе данных")
+        result = await db.execute(select(MagicTokens).where(
+            MagicTokens.token == token
+        ))
+        token = result.scalars().first()
+        if not token:
+            logger.info("Токен не найден в базе данных")
+            return False
         
-    #@staticmethod
-    #async def make_token_used(db: AsyncSession, token: str):
-    #    """Меняем значение токена на использованное"""
-    #    logger.info(f"Пометка токена: {token} как использованного...")
-    #    result = await db.execute(select(MagicTokens).where(
-    #        MagicTokens.token == token
-    #    ))
-    #    entry = result.scalars().first()
-    #    if not entry:
-    #        logger.warning(f"Токен: {token} не найден в таблице MagicTokens")
-    #        raise ValueError(f"Токен: {token} не найден в таблице MagicTokens")
-    #    if entry.used:
-    #        return
-    #    entry.used = True
-    #    
-    #    db.add(entry)
-    #    await db.commit()
+        logger.info(f"Найден токен: {token}")
+        return True
