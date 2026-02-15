@@ -40,6 +40,6 @@ class MetricsMiddleware(BaseHTTPMiddleware):
         # добавляем заголовки
         # нужно для сборщиков метрики как Прометеус\Grafana
         response.headers["X-Process-Time"] = f"{process_time}"
-        response.headers["X-Response-Seze"] = str(response_size)
+        response.headers["X-Response-Size"] = str(response_size)
 
         return response

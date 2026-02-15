@@ -9,7 +9,7 @@ class User(Base): # пользователь
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    telegram_id: Mapped[str] = mapped_column(String(25), unique=True, index=True, nullable=True) # для поиска использует B-дерево, что ускоряет его
+    telegram_id: Mapped[int] = mapped_column(Integer, unique=True, index=True, nullable=True) # для поиска использует B-дерево, что ускоряет его
     telegram_linked_at: Mapped[datetime | None] = mapped_column(DateTime, default=None)
     username: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     phone: Mapped[str] = mapped_column(String(30), unique=True, nullable=False, index=True)

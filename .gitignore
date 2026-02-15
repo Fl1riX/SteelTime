@@ -12,5 +12,3 @@ db_test_data.py
 env.py
 .env
 TODO.md
-tests/
-pytest.ini

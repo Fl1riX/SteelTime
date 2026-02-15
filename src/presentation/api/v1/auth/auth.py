@@ -37,6 +37,10 @@ async def login_with_link(
         logger.error("POST: Такой пользователь не существует в бд")
         raise Unauthorized("Неверный email или пароль")
     
+    # Проверяем что токен есть в базе данных
+    if not await TgLinkService.find_token(token, db):
+        raise NotCorrect("Не верный токен")
+    
     # проверяем корректность введенного пароля
     if not verify_password(password=login_data.password, hashed_password=user.password):
         logger.info(f"Введен не верный пароль для пользователя: {user_data.login}")
