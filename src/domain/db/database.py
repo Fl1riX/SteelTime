@@ -1,12 +1,8 @@
 #from pathlib import Path
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import declarative_base
-from .config import DATABASE_URL
+from src.config import DATABASE_URL
 
-# Нужно перейти на 2 уровня вверх до корня проекта
-#BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-
-#DB_PATH = BASE_DIR / "Booking-System.db"
 DB_URL = f"sqlite+aiosqlite:///{DATABASE_URL}"
 
 engine = create_async_engine(

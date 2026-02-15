@@ -6,6 +6,22 @@ from datetime import datetime, timezone
 from src.logger import logger
 
 class User(Base): # пользователь
+    """
+    Таблица пользователя
+      id: int, primary_key=True
+      telegram_id: int, unique=True, nullable=True
+      telegram_linked_at: datetime | None, default=None
+      username: str(50), nullable=False
+      phone: str(30), unique=True, nullable=False
+      email: str(50), unique=True
+      password: str(255), nullable=False
+      created_at: datetime, default=datetime.now(timezone.utc)
+      is_entrepreneur: bool, default=False
+      full_name: str(150) | None
+      my_appointments: relationship [Appointment.user_id]
+      users_appointments: relationship [Appointment.entrepreneur_id]
+      services: relationship 
+    """
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -14,7 +30,7 @@ class User(Base): # пользователь
     username: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     phone: Mapped[str] = mapped_column(String(30), unique=True, nullable=False, index=True)
     email: Mapped[str] = mapped_column(String(50), unique=True, index=True)
-    password: Mapped[str] = mapped_column(String(255))
+    password: Mapped[str] = mapped_column(String(255), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
     is_entrepreneur: Mapped[bool] = mapped_column(Boolean, default=False)
     full_name: Mapped[str | None] = mapped_column(String(150))
@@ -118,6 +134,15 @@ class Appointment(Base): # запись
         raise ValueError("Дата оказания услуги не может быть в прошлом")
       
 class MagicTokens(Base): # магические токены для привязки аккаунта к телеграм боту
+    """
+    Таблица, хранящая magic токены для привязки телеграм бота
+      id: int, primary_key
+      telegram_id: int, nullable=False
+      token: str(64), nullable=False, unique=True
+      expires_at: datetime, nullable=False
+      used: bool, default=False
+      created_at: datetime, default=datetime.now(timezone.utc)
+    """
     __tablename__="magic_tokens"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

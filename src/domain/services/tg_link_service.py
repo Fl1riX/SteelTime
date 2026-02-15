@@ -42,8 +42,14 @@ class TgLinkService:
         return link_token
             
     @staticmethod
-    async def link_account(db: AsyncSession, link_token, user):
-        """Привязываем телеграм бота к аккаунту"""
+    async def link_account(db: AsyncSession, link_token: MagicTokens, user: User):
+        """
+        Привязываем телеграм бота к аккаунту
+            db: AsyncSession
+            link_token: MagicTokens
+            user: User
+        -> Nothing
+        """
         if link_token.used:
             logger.warning(f"Токен уже ииспользован: {link_token}")
             raise ValueError("Токен уже ииспользован")
@@ -66,7 +72,12 @@ class TgLinkService:
     
     @staticmethod
     async def find_token(token: str, db: AsyncSession) -> bool:
-        """Ищет токен в базе данных"""
+        """
+        Ищет токен в базе данных
+            token: str
+            db: AsyncSession
+        -> bool
+        """
         logger.info("Поиск токен в базе данных")
         result = await db.execute(select(MagicTokens).where(
             MagicTokens.token == token

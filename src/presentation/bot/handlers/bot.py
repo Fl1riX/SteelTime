@@ -2,7 +2,7 @@ import asyncio
 
 from aiogram import Bot, Dispatcher
 
-from src.presentation.bot.core.config import TELEGRAM_BOT_TOKEN
+from src.config import TELEGRAM_BOT_TOKEN
 from .start import router as start_router
 from .user_menu import router as user_menu_router
 from src.logger import logger
