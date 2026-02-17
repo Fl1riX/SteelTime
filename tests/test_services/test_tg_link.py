@@ -1,6 +1,6 @@
 import pytest
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 #from unittest.mock import patch, AsyncMock
 from sqlalchemy import select
 
@@ -46,7 +46,7 @@ async def test_find_token(db_session):
     )
     
     db_session.add(test_token)
-    await db_session.commit()
+    await db_session.flush()
     
     found = await TgLinkService.find_token(token="test_token_779", db=db_session)
     
@@ -57,14 +57,14 @@ async def test_link_account(db_session):
     """Привязываем телеграм бота к аккаунту"""
     test_token = MagicTokens(
         telegram_id=1239517536,
-        token="test_token_779",
-        expires_at=datetime.now() + timedelta(minutes=10)
+        token="test_token_778",
+        expires_at=datetime.now(timezone.utc) + timedelta(minutes=10)
     )
     test_user = User(id=1, email="admin@gmail.com", phone="+79999513641", username="admin", password="password_123")
     
     db_session.add(test_token)
     db_session.add(test_user)
-    await db_session.commit()
+    await db_session.flush()
     
     await TgLinkService.link_account(
         db=db_session, 
@@ -74,7 +74,7 @@ async def test_link_account(db_session):
     
     result = await db_session.execute(
         select(MagicTokens).where(
-            MagicTokens.token == "test_token_779"
+            MagicTokens.token == "test_token_778"
         )
     )
     linked_token = result.scalar_one()
