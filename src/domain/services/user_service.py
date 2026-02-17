@@ -1,7 +1,7 @@
 from src.shared.schemas import user_schema, auth_schema
 from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.domain.db.models import User
+from src.infrastructure.db.models import User
 from src.logger import logger
 
 class UserService:

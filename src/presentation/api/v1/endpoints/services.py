@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Request
 
 from src.shared.schemas import service_schema
 from src.logger import logger
-from src.domain.db.database import get_db
+from src.infrastructure.db.database import get_db
 from src.domain.services.service_service import ServiceService
 from src.presentation.api.v1.auth.dependencies import get_current_user_id
 from src.limiter import limiter

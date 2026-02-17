@@ -5,8 +5,7 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.domain.db.database import get_db
-from src.domain.services.auth_service import AuthService
+from src.infrastructure.db.database import get_db
 from src.domain.services.tg_link_service import TgLinkService
 from src.presentation.api.v1.exceptions import NotCorrect
 from src.logger import logger
@@ -24,7 +23,7 @@ async def create_telegram_magic_link(
     """Создание токена для привязки телеграм бота к аккаунту"""
     logger.debug(f"Получен tg_id: {telegram_id}")
     
-    if await AuthService.is_telegram_linked(telegram_id, db):
+    if await TgLinkService.check_telegram_connection(telegram_id, db):
         logger.warning(f"Этот аккаунт телеграм уже привязан к платформе: {telegram_id}")
         raise NotCorrect("Уже привязан")
     

@@ -2,7 +2,7 @@ from sqlalchemy import select, delete, or_
 from datetime import datetime, timezone
 
 from .get_db import SessionLocal
-from src.domain.db.models import MagicTokens
+from src.infrastructure.db.models import MagicTokens
 from src.logger import logger
 
 async def cleanup_telegram_tokens():

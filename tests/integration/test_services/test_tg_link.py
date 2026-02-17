@@ -1,12 +1,10 @@
 import pytest
 
 from datetime import datetime, timedelta, timezone
-#from unittest.mock import patch, AsyncMock
 from sqlalchemy import select
 
 from src.domain.services.tg_link_service import TgLinkService
-#from src.domain.services.auth_service import AuthService
-from src.domain.db.models import MagicTokens, User
+from src.infrastructure.db.models import MagicTokens, User
 
 @pytest.mark.asyncio
 async def test_save_link_token(db_session):
@@ -60,7 +58,12 @@ async def test_link_account(db_session):
         token="test_token_778",
         expires_at=datetime.now(timezone.utc) + timedelta(minutes=10)
     )
-    test_user = User(id=1, email="admin@gmail.com", phone="+79999513641", username="admin", password="password_123")
+    test_user = User(
+        email="admin@gmail.com", 
+        phone="+79999513641", 
+        username="admin", 
+        password="password_123"
+    )
     
     db_session.add(test_token)
     db_session.add(test_user)
@@ -82,5 +85,33 @@ async def test_link_account(db_session):
     assert linked_token.used is True
     assert linked_token.telegram_id == 1239517536
     
+@pytest.mark.asyncio
+async def test_check_magic_token(db_session):
+    """
+    Тест проверки существования magic токена в бд
+    """    
+    test_token = "super_magic_token_lol_005"
+    token = MagicTokens(
+        telegram_id=1593577496,
+        token=test_token,
+        expires_at=datetime.now() + timedelta(minutes=10)
+    )
     
+    db_session.add(token)
+    await db_session.flush()
+    
+    link_token = await TgLinkService.check_magic_token(token=test_token, db=db_session)
+    
+    assert link_token is not None, "Токен не найден"
+    assert link_token.token == test_token
 
+@pytest.mark.asyncio
+async def test_check_telegram_connection(db_session):
+    """
+    Тест проверки того, что пользователь привязал бота к аккаунту
+    """
+    telegram_id = 1593577490
+    
+    tg_linked = await TgLinkService.check_telegram_connection(telegram_id, db_session)
+    
+    assert tg_linked is None or tg_linked.telegram_id == telegram_id

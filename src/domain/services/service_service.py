@@ -2,7 +2,7 @@ from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.shared.schemas import service_schema
-from src.domain.db.models import Service
+from src.infrastructure.db.models import Service
 from src.logger import logger
 from src.domain.services.user_service import UserService
 

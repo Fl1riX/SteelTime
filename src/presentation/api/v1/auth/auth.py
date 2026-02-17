@@ -5,7 +5,7 @@ from slowapi.util import get_remote_address
 from fastapi.security import OAuth2PasswordRequestForm
 
 from src.presentation.api.v1.auth.jwt_handler import create_access_token, verify_password, hash_password
-from src.domain.db.database import get_db
+from src.infrastructure.db.database import get_db
 from src.domain.services.user_service import UserService
 from src.domain.services.auth_service import AuthService
 from src.domain.services.tg_link_service import TgLinkService

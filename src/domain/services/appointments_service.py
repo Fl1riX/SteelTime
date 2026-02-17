@@ -2,7 +2,7 @@ from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.shared.schemas import appointment_schema
-from src.domain.db.models import Appointment
+from src.infrastructure.db.models import Appointment
 from src.logger import logger
 
 class AppointmentService:

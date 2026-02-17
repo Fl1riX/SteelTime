@@ -3,13 +3,11 @@ import pytest_asyncio
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
-from src.domain.db.models import Base
-
+from src.infrastructure.db.models import Base
 
 @pytest_asyncio.fixture(scope="session")
 async def engine():
     """Создаем движок БД один раз для всех тестов"""
-    
     # Создаем движок
     test_engine = create_async_engine(
         "sqlite+aiosqlite:///:memory:", 
@@ -28,18 +26,17 @@ async def engine():
 @pytest_asyncio.fixture(scope="function")
 async def db_session(engine):
     """Создаем сессию для тестов"""
-    
-    SessionFactory = async_sessionmaker(
-        bind=engine,
-        class_=AsyncSession,
-        expire_on_commit=False
-    )
-    session = SessionFactory()
-    try:
-        # Отдаем сессию
-        yield session
-    finally:
-        await session.rollback()
-        await session.close()
+    async with engine.connect() as conn:
+        await conn.begin() # начинаем транзакцию на уровне соединения
+        session = AsyncSession(
+            conn,
+            expire_on_commit=False
+        )
+        try:
+            # Отдаем сессию
+            yield session
+            await session.rollback()
+        finally:
+            await session.close()
     
 

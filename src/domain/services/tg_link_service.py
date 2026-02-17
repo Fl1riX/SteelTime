@@ -2,12 +2,18 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
-from src.domain.db.models import User,  MagicTokens
+from src.infrastructure.db.models import User,  MagicTokens
 from src.logger import logger
 
 class TgLinkService:
     @staticmethod
-    async def check_telegram_connection(tg_id: str, db: AsyncSession) -> User | None:
+    async def check_telegram_connection(tg_id: int, db: AsyncSession) -> User | None:
+        """
+        Проверка того, что пользователь привязал бота к аккаунту
+            tg_id: int
+            db: AsyncSession
+        -> User | None
+        """
         result = await db.execute(select(User).where(
             User.telegram_id == tg_id
         ))
@@ -15,11 +21,19 @@ class TgLinkService:
         if user_info is None:
             logger.info(f"Пользователь с id: {tg_id} не привязал бота")
             return user_info
+        logger.info(f"Пользователь с id: {tg_id} привязал бота")
         return user_info
     
     @staticmethod
     async def save_link_token(expires_at: datetime, telegram_id: int, token: str, db: AsyncSession):
-        """Сохранение magic токенов в таблицу"""
+        """
+        Сохранение magic токенов в таблицу
+            expires_at: datetime
+            telegram_id: int
+            token: str
+            db: AsyncSession
+        -> Null
+        """
         link_token = MagicTokens(
             telegram_id=telegram_id,
             token=token,
@@ -31,12 +45,17 @@ class TgLinkService:
         logger.info(f"Сохранен link токен: tg_id={link_token.telegram_id}")
     
     @staticmethod
-    async def check_magic_token(token: str, db: AsyncSession):
-        """Проверка существования magic токена в бд"""
+    async def check_magic_token(token: str, db: AsyncSession) -> MagicTokens | None:
+        """
+        Проверка существования magic токена в бд
+            token: str
+            db: AsyncSession
+        -> MagicTokens | None
+        """
         result = await db.execute(select(MagicTokens).where(
             MagicTokens.token == token,
-            MagicTokens.expires_at > datetime.now(timezone.utc),
-            MagicTokens.used == False
+            MagicTokens.expires_at > datetime.now(),
+            MagicTokens.used == False  # noqa: E712
         ))
         link_token = result.scalar_one_or_none()
         return link_token
@@ -48,7 +67,7 @@ class TgLinkService:
             db: AsyncSession
             link_token: MagicTokens
             user: User
-        -> Nothing
+        -> Null
         """
         if link_token.used:
             logger.warning(f"Токен уже ииспользован: {link_token}")
@@ -82,8 +101,8 @@ class TgLinkService:
         result = await db.execute(select(MagicTokens).where(
             MagicTokens.token == token
         ))
-        token = result.scalars().first()
-        if not token:
+        found_token = result.scalars().first()
+        if not found_token:
             logger.info("Токен не найден в базе данных")
             return False
         

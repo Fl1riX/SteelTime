@@ -3,10 +3,10 @@ from fastapi import APIRouter, Depends, Request
 
 from src.shared.schemas import user_schema
 from src.logger import logger
-from src.domain.db.database import get_db
+from src.infrastructure.db.database import get_db
 from src.presentation.api.v1.auth.dependencies import get_current_user_id
 from src.domain.services.user_service import UserService
-from src.domain.services.auth_service import AuthService
+from src.domain.services.tg_link_service import TgLinkService
 from src.limiter import limiter
 from src.presentation.api.v1.exceptions import NoAccess, NotFound
 
@@ -39,10 +39,10 @@ async def get_user(
 @limiter.limit("5/minute")
 async def check_user_telegram_connection(
     request: Request, 
-    telegram_id: str, 
+    telegram_id: int, 
     db: AsyncSession = Depends(get_db)
 ):
-    connected = await AuthService.check_telegram_connection(tg_id=telegram_id, db=db)
+    connected = await TgLinkService.check_telegram_connection(tg_id=telegram_id, db=db)
     if connected is None:
         logger.info(f"Пользователь с id: {telegram_id} не привязан к боту")
         return {"connected": False}
