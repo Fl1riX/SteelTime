@@ -31,7 +31,7 @@ class User(Base): # пользователь
     phone: Mapped[str] = mapped_column(String(30), unique=True, nullable=False, index=True)
     email: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     is_entrepreneur: Mapped[bool] = mapped_column(Boolean, default=False)
     full_name: Mapped[str | None] = mapped_column(String(150))
     my_appointments: Mapped[List["Appointment"]] = relationship(
@@ -104,7 +104,7 @@ class Appointment(Base): # запись
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     comment: Mapped[str] = mapped_column(String(1200))
     service_id: Mapped[int] = mapped_column(ForeignKey("services.id")) # сохраняем какую услугу оказываем, чтобы service могла сослаться на таблицу
     service: Mapped["Service"] = relationship(
