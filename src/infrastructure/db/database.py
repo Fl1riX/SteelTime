@@ -3,11 +3,10 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from sqlalchemy.orm import declarative_base
 from src.config import DATABASE_URL
 
-DB_URL = f"sqlite+aiosqlite:///{DATABASE_URL}"
+DB_URL = f"postgresql+asyncpg://{DATABASE_URL}"
 
 engine = create_async_engine(
     DB_URL, 
-    connect_args={"check_same_thread": False}, 
     echo=True # для отладки 
 )
 

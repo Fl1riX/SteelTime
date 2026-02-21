@@ -19,8 +19,13 @@ async def create_telegram_magic_link(
     request: Request,
     telegram_id: int,
     db: AsyncSession = Depends(get_db)
-):
-    """Создание токена для привязки телеграм бота к аккаунту"""
+) -> dict:
+    """
+    Создание токена для привязки телеграм бота к аккаунту
+        telegram_id: int
+        db: AsyncSession
+    -> dict
+    """
     logger.debug(f"Получен tg_id: {telegram_id}")
     
     if await TgLinkService.check_telegram_connection(telegram_id, db):

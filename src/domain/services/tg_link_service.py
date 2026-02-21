@@ -39,9 +39,13 @@ class TgLinkService:
             token=token,
             expires_at=expires_at
         )
-        
-        db.add(link_token)
-        await db.commit()
+        try:
+            db.add(link_token)
+            await db.commit()
+        except Exception as e:
+            await db.rollback()
+            logger.warning(f"Ошибка: {e}, откат изменений...")
+            
         logger.info(f"Сохранен link токен: tg_id={link_token.telegram_id}")
     
     @staticmethod
