@@ -8,7 +8,7 @@ from src.presentation.api.v1.auth.dependencies import get_current_user_id
 from src.domain.services.user_service import UserService
 from src.domain.services.tg_link_service import TgLinkService
 from src.limiter import limiter
-from src.presentation.api.v1.exceptions import NoAccess, NotFound
+from src.presentation.api.v1.exceptions import NoAccess, NotFound, NotCorrect
 
 router = APIRouter(prefix="/users", tags=["Пользователи"])
 
@@ -42,6 +42,10 @@ async def check_user_telegram_connection(
     telegram_id: int, 
     db: AsyncSession = Depends(get_db)
 ):
+    if len(str(telegram_id)) < 10:
+        logger.info(f"Слишком короткий tg_id: {telegram_id}")
+        raise NotCorrect("Слишком короткий id")
+        
     connected = await TgLinkService.check_telegram_connection(tg_id=telegram_id, db=db)
     if connected is None:
         logger.info(f"Пользователь с id: {telegram_id} не привязан к боту")
