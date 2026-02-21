@@ -3,11 +3,11 @@ services:
   db:  
     image: postgres:15
     environment:
-      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_USER: ${DATABASE_USER} 
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: steel_time
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d steel_time"] # pg_isready - встроенная утилита которая проверяет, что БД принимает соединения
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER}  -d steel_time"] # pg_isready - встроенная утилита которая проверяет, что БД принимает соединения
       interval: 5s
       retries: 5
     volumes: 

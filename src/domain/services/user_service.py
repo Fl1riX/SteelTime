@@ -11,7 +11,6 @@ class UserService:
         result = await db.execute(select(User).where(
             or_(
                     User.email == user.login,
-                    User.telegram_id == user.login,
                     User.phone == user.login
                 )   
             )
