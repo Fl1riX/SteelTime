@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&pause=1000&color=4A90E2&center=true&vCenter=true&width=600&lines=⚙️+SteelTime;Умная+система+онлайн-записи" alt="SteelTime" />
-
 <br/>
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
