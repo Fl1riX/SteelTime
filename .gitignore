@@ -6,9 +6,6 @@ __pycache__/
 .venv/
 *.pyc
 *.sqlite
-alembic.ini
 .vscode
 db_test_data.py
-env.py
-.env
 TODO.md
