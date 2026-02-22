@@ -12,6 +12,26 @@ from src.presentation.api.v1.exceptions import NoAccess, NotFound, NotCorrect
 
 router = APIRouter(prefix="/users", tags=["Пользователи"])
 
+@router.get("/me", response_model=user_schema.UserPublic)
+async def get_me(
+    request: Request,
+    current_user_id: int = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db)
+):
+    logger.info(f"Получение информации об аккауте пользователя: {current_user_id}...")
+    if not current_user_id:
+        logger.warning(f"user_id: {current_user_id} пытается залезть в чужой аккаунт")
+        raise NoAccess("Не валидный токен")
+    
+    user_info = await UserService.find_user_by_id(current_user_id, db)
+    
+    if user_info is None:
+        logger.info(f"❌ Пользователь: {current_user_id} не найден ❌")
+        raise NotFound("Пользователь не найден")
+    
+    logger.info(f"✅ Пользователь {current_user_id} найден ✅")
+    return user_info
+
 @router.get("/{user_id}",  response_model=user_schema.UserResponse)
 @limiter.limit("5/minute")
 async def get_user(
@@ -43,42 +63,41 @@ async def check_user_telegram_connection(
     db: AsyncSession = Depends(get_db)
 ):
     if len(str(telegram_id)) < 10:
-        logger.info(f"Слишком короткий tg_id: {telegram_id}")
+        logger.info(f"❌ Слишком короткий tg_id: {telegram_id} ❌")
         raise NotCorrect("Слишком короткий id")
         
     connected = await TgLinkService.check_telegram_connection(tg_id=telegram_id, db=db)
     if connected is None:
-        logger.info(f"Пользователь с id: {telegram_id} не привязан к боту")
+        logger.info(f"❌ Пользователь с id: {telegram_id} не привязан к боту ❌")
         return {"connected": False}
     
-    logger.info(f"Обнаружене привязка telegram польователя с id: {telegram_id}")
+    logger.info(f"✅ Обнаружена привязка telegram польователя с id: {telegram_id} ✅")
     return {
         "connected": True,
         "is_entrepreneur": connected.is_entrepreneur
     }
 
-@router.put("/{user_id}", response_model=user_schema.UserUpdate)
+@router.put("/", response_model=user_schema.UserUpdate)
 @limiter.limit("5/minute")
 async def update_user(
     request: Request,
-    user_id: int, 
     new_user: user_schema.UserUpdate, 
     current_user_id: int = Depends(get_current_user_id), 
     db: AsyncSession = Depends(get_db)
 ):
     logger.info("Аутентификация пользователя")
-    if user_id != current_user_id:
-        logger.warning(f"user_id: {current_user_id} пытается изменить дынные чужого аккаунта: {user_id}")
+    if not current_user_id:
+        logger.warning(f"user_id: {current_user_id} пытается изменить дынные чужого аккаунта")
         raise NoAccess("У вас нет доступа к этому аккаунту")
         
-    logger.info(f"PUT: Проверка наличия пользователя с id: {user_id} в бд...")   
-    user = await UserService.find_user_by_id(id=user_id, db=db)
+    logger.info(f"PUT: Проверка наличия пользователя с id: {current_user_id} в бд...")   
+    user = await UserService.find_user_by_id(id=current_user_id, db=db)
     
     if not user:
-        logger.error(f"PUT: ❌ Пользователь с id: {user_id} не найден в бд ❌")
+        logger.error(f"PUT: ❌ Пользователь с id: {current_user_id} не найден в бд ❌")
         raise NotFound("Нельзя обновить даные. Такого пользователя не существует")
     
-    logger.info(f"PUT: Пользователь с id: {user_id} найден в бд. Обновление данных...")
+    logger.info(f"PUT: Пользователь с id: {current_user_id} найден в бд. Обновление данных...")
     
     await UserService.update_user(new_user=new_user, db=db, user=user)
     
