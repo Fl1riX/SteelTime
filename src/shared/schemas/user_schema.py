@@ -4,10 +4,11 @@ from .types import TgId, Email, PhoneNumber
 from datetime import datetime
 
 class UserPublic(BaseModel):
-    telegram_id: TgId | None 
+    telegram_id: Optional[TgId] = None 
     username: str = Field(max_length=50)
-    phone: PhoneNumber | None
+    phone: PhoneNumber 
     email: Email 
+    fullname: Optional[str] = None
     
     model_config = ConfigDict(extra='forbid')
         
