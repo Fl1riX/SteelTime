@@ -18,5 +18,6 @@ COPY src/presentation/bot ./src/presentation/bot
 COPY src/logger.py ./src/
 COPY src/domain/services ./src/domain/services
 COPY src/shared/ ./src/shared/
+COPY src/config.py ./src/
 
 CMD ["python", "-m", "src.presentation.bot.handlers.bot"]

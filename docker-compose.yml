@@ -1,7 +1,7 @@
 services:
 
   db:  
-    image: postgres:15
+    image: postgres:15-alpine
     environment:
       POSTGRES_USER: ${DATABASE_USER} 
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
@@ -9,14 +9,20 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER}  -d steel_time"] # pg_isready - встроенная утилита которая проверяет, что БД принимает соединения
       interval: 5s
+      timeout: 5s
       retries: 5
+      start_period: 30s
     volumes: 
       - postgres_data:/var/lib/postgresql/data # стандартное мето хранения файлов postgres (имя_volume:путь внутри контейнера)
+    mem_limit: 512m
+    mem_reservation: 256m
   
   api:
     build:
       context: .
       dockerfile: Dockerfile.api
+      args: # Кэш для быстрой сборки
+        - BUILDKIT_INLINE_CACHE=1
     ports: 
       - "8000:8000" # Формат: порт на пк: порт в контейнере
     env_file:
@@ -24,6 +30,39 @@ services:
     depends_on:
       db:
         condition: service_healthy # Ждем пока БД будет реально готова к работе, а не просто стартовал контейнер
-        
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    mem_limit: 1g # Лимиты ресурсов
+    cpus: 0.5
+
+  
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.bot
+      args: # Кэш для быстрой сборки
+        - BUILDKIT_INLINE_CACHE=1
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    mem_limit: 256m
+    cpus: 0.25
+
 volumes:
   postgres_data:
+    driver: local
+
+networks:
+  default:
+    driver: bridge
+    name: steeltime_network
