@@ -8,6 +8,7 @@
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![Aiogram](https://img.shields.io/badge/Aiogram_3-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://aiogram.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE)
+[![CI](https://github.com/Fl1riX/SteelTime/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/Fl1riX/SteelTime/actions/workflows/ci.yml)
 
 <br/>
 
