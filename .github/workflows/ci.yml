@@ -1,0 +1,90 @@
+name: CI/CD SteelTime # Название, которое будет отображаться в Actions на github
+
+on:  # События. Запускаются при пуше в main или develop, или при создании pull request в main 
+  push: 
+    branches: [main, develop]
+  pull_request: 
+    branches: [ main ]
+
+jobs: # Задачи 
+  tests: # Задача с именем test 
+    runs-on: ubuntu-latest # выполняется на виртуалке с ubuntu
+    strategy: # Стратегия матрицы, проверяет на соместимость с версией 3.12, если несколько версий, то провека запускается параллельно 
+      matrix: 
+        python-version: ["3.11", "3.12", "3.13"]
+    
+    steps: # Шаги 
+    - uses:  actions/checkout@v4 # Забирает код из репозитория, чтобы дальше с ним работать
+
+      # Устанавливаем python, версию берем из матрицы
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+      # Кэширует папку с загруженными пакетами pip 
+    - name: Cache packages
+      uses: actions/cache@v4
+      with: 
+        path: |
+          ~/.cache/pip
+          .pytest_cache
+          .mypy_cache
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }} # если requirements.txt не изменялся, то кэш восстановится.
+    
+    # Аудит уязвимых пакетов pip
+    - name: Pip Audit
+      run: |
+        pip install pip-audit
+        pip-audit
+      continue-on-error: true # Не падает при нахлждении уязвимых пакетов, но выводит сообщения, потому что в некоторых пакетах может не быть обновения с фиксом
+
+    # Установка зависимостей
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip 
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio pytest-cov pytest-mock
+
+    # Проверка типов(ищет TypeError)
+    - name: Type check 
+      run: |
+        pip install mypy
+        mypy src/ --ignore-missing-imports
+
+    # Устанавливаем и запускаем линтер Ruff. Он ищет ошибки стиля во всем проекте, потенциальные баги и нарушения правил форматирования
+    - name: Lint with Ruff
+      run: |
+        pip install ruff
+        ruff check .
+    
+    # Аудит кода с Bandit
+    - name: Bandit Audit
+      run: |
+        pip install bandit 
+        bandit -r src/ -ll 
+      # -ll покажет LOW и выше, -l только MEDIUM/HIGH
+    
+    # Запускаем тесты
+    - name: Run tests
+      run: |
+        pytest tests/ -v --cov=src/ --cov-report=xml --cov-report=term-missing
+      # tests/ - папка с тестами, -v - подробный вывод, --cov=src/ - измеряет покрытие тетсми в папке, 
+      # --cov-report=xml - генерирует отчет о покрытии в xml формате
+      # --cov-report=xml - выводит в консоль какие строки не покрыты
+      # если тесты падают с ошибко, то все упадет
+    
+    # Загружает xml отчет о покрытии в сервис codecov
+    - name: Upload coverage
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+    
+    # Уведомление оп провале Ci
+    - name: Notify Failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: 'Ci failed! 🔥'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
