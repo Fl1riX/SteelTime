@@ -79,7 +79,7 @@ jobs: # Задачи
       uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
-    
+
     # Уведомление оп провале Ci
     - name: Notify Failure
       if: failure()

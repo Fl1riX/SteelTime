@@ -1,7 +1,7 @@
 # глобальные фикстуры(это функции подготовки данных/окружения, которые автоматически запускаются ПЕРЕД ВСЕМИ тестами в проекте.)  для БД, API
 import pytest_asyncio
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from src.infrastructure.db.models import Base
 
