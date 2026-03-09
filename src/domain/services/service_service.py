@@ -7,6 +7,42 @@ from src.logger import logger
 from src.domain.services.user_service import UserService
 
 class ServiceService:
+    @staticmethod 
+    async def is_name_indicated(user_id:int, db: AsyncSession) -> bool:
+        """
+        Проверка, что у предпринимателя указано полное имя
+            user_id:int
+            db: AsyncSession
+        -> bool
+        """
+        logger.info(f"Проверка что у пользователя: {user_id} задано ФИО...")
+        user = await UserService.find_user_by_id(user_id, db)
+
+        if user and user.full_name:
+            logger.info("Пользователь указал ФИО ✅")
+            return True
+        logger.info("Пользователь не указал ФИО")
+        return False
+    
+    @staticmethod
+    async def set_fullname(user_id: int, fullname: str, db: AsyncSession) -> bool:
+        """
+        Задает полное имя пользователя
+            user_id: int
+            fullname: str
+            db: AsyncSession
+        -> bool
+        """
+        logger.info(f"Ищем пользователя {user_id} в БД...")
+        user = await UserService.find_user_by_id(user_id, db)
+        if user is not None:
+            logger.info("Найден пользователь. Запись ФИО...")
+            user.full_name = fullname
+            await db.commit()
+            return True
+        logger.info("Пользователь не найден")
+        return False
+        
     @staticmethod
     async def find_service_by_id(id: int, db: AsyncSession):
         """Поиск улуги по id"""
@@ -51,7 +87,8 @@ class ServiceService:
             user.is_entrepreneur = True
             await db.flush() # сохранение изменения флага 
         
-        new_service = Service(**service.dict(), entrepreneur_id=current_user_id)
+        service_data = service.dict(exclude={"fullname"})
+        new_service = Service(**service_data, entrepreneur_id=current_user_id)
     
         try:
             db.add(new_service)

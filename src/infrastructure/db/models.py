@@ -143,7 +143,7 @@ class MagicTokens(Base): # магические токены для привяз
       used: bool, default=False
       created_at: datetime, default=datetime.now(timezone.utc)
     """
-    __tablename__="magic_tokens"
+    __tablename__ = "magic_tokens"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     telegram_id: Mapped[int] = mapped_column(Integer, nullable=False)

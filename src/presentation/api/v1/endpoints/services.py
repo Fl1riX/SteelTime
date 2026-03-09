@@ -7,7 +7,7 @@ from src.infrastructure.db.database import get_db
 from src.domain.services.service_service import ServiceService
 from src.presentation.api.v1.auth.dependencies import get_current_user_id
 from src.limiter import limiter
-from src.presentation.api.v1.exceptions import NotFound, ConflictError, NoAccess
+from src.presentation.api.v1.exceptions import NotFound, ConflictError, NoAccess, NotCorrect
 
 router = APIRouter(prefix="/services", tags=["Услуги"])
 
@@ -36,6 +36,14 @@ async def create_service(
     current_user_id: int = Depends(get_current_user_id), 
     db: AsyncSession = Depends(get_db)
 ):
+    if service.fullname is not None:
+        name_indicated = await ServiceService.is_name_indicated(current_user_id, db)
+        if not name_indicated:
+            name_setted = await ServiceService.set_fullname(current_user_id, service.fullname, db)
+            if not name_setted:
+                logger.warning("Ошибка, не удалось установить имя пользователя")
+                raise NotCorrect("Пользователь не найден")
+    
     logger.info("POST: Проверка наличия услуги в бд...")
     existing = await ServiceService.find_by_name(name=service.name, address=service.address, current_user_id=current_user_id, db=db)
     

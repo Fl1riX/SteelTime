@@ -1,16 +1,23 @@
 from pydantic import BaseModel, ConfigDict
+from typing import Optional
 
-class ServiceCreate(BaseModel):
+class ServiceBase(BaseModel):
     name: str
     price: int
     description: str
     duration: str
     address: str
     
-    model_config = ConfigDict(extra='forbid')
-
-class ServiceResponse(ServiceCreate):
-    id: int
-    
     class Config:
         from_attributes = True
+    
+class ServiceCreate(ServiceBase):
+    fullname: Optional[str] = None
+    
+    model_config = ConfigDict(extra='forbid')
+    
+class ServiceResponse(ServiceBase):
+    id: int
+    
+    model_config = ConfigDict(extra='forbid')
+    
