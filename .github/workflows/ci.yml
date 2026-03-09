@@ -72,19 +72,11 @@ jobs: # Задачи
       # tests/ - папка с тестами, -v - подробный вывод, --cov=src/ - измеряет покрытие тетсми в папке, 
       # --cov-report=xml - генерирует отчет о покрытии в xml формате
       # --cov-report=xml - выводит в консоль какие строки не покрыты
-      # если тесты падают с ошибко, то все упадет
+      # если тесты падают с ошибкой, то все упадет
     
     # Загружает xml отчет о покрытии в сервис codecov
-    - name: Upload coverage
-      uses: codecov/codecov-action@v4
+    - name: Coverage Badge
+      uses: coverallsapp/github-action@v2
       with:
-        file: ./coverage.xml
-
-    # Уведомление оп провале Ci
-    - name: Notify Failure
-      if: failure()
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        text: 'Ci failed! 🔥'
-        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./coverage.xml

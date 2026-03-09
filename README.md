@@ -9,7 +9,7 @@
 [![Aiogram](https://img.shields.io/badge/Aiogram_3-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://aiogram.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE)
 [![CI](https://github.com/Fl1riX/SteelTime/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/Fl1riX/SteelTime/actions/workflows/ci.yml)
-[![Coverage](https://coverage.codecov.io/gh/Fl1riX/SteelTime/branch/main/graph/badge.svg)](https://codecov.io/gh/Fl1riX/SteelTime)
+[![Coveralls](https://coveralls.io/repos/github/ТВОЙ_ЮЗЕР/SteelTime/badge.svg)](https://coveralls.io/github/ТВОЙ_ЮЗЕР/SteelTime)
 
 <br/>
 
