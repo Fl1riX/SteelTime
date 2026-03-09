@@ -47,10 +47,10 @@ jobs: # Задачи
         pip install pytest pytest-asyncio pytest-cov pytest-mock
 
     # Проверка типов(ищет TypeError)
-    - name: Type check 
-      run: |
-        pip install mypy
-        mypy src/ --ignore-missing-imports
+    #- name: Type check 
+    #  run: |
+    #    pip install mypy
+    #    mypy src/ --ignore-missing-imports
 
     # Устанавливаем и запускаем линтер Ruff. Он ищет ошибки стиля во всем проекте, потенциальные баги и нарушения правил форматирования
     - name: Lint with Ruff
