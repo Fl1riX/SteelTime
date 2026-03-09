@@ -1,4 +1,4 @@
-from sqlalchemy import select, delete, or_
+from sqlalchemy import delete, or_
 from datetime import datetime, timezone
 
 from .get_db import SessionLocal
@@ -12,7 +12,7 @@ async def cleanup_telegram_tokens():
         try:
             await db.execute(delete(MagicTokens).where(
             or_(
-                MagicTokens.used == True,
+                MagicTokens.used,
                 MagicTokens.expires_at < datetime.now(timezone.utc)
             )
             ))
