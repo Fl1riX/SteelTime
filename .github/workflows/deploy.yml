@@ -6,6 +6,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: deploy-${{ github.ref }} # Группа по ветке
+  cancel-in-progress: true # Отменяет предыдущие запуски
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -18,5 +22,7 @@ jobs:
           key: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
           script: |
             cd ~/SteelTime
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             docker compose up -d --build
+            docker system prune -f
