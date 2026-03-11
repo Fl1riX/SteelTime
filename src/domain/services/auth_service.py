@@ -37,7 +37,7 @@ class AuthService:
         conditions.append(User.email == user.email)
         conditions.append(User.phone == user.phone)
         if user.telegram_id is not None:
-            conditions.append(User.telegram_id == user.telegram_id)
+            conditions.append(User.telegram_id == str(user.telegram_id))
             
         result = await db.execute(select(User).where(
             or_(*conditions)
