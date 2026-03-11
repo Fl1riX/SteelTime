@@ -1,28 +1,27 @@
 name: Deploy
 
-
 on:
   push:
     branches:
       - main
 
 concurrency:
-  group: deploy-${{ github.ref }} # Группа по ветке
-  cancel-in-progress: true # Отменяет предыдущие запуски
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Connect to tailscale
+      - name: Connect to tailscale 
         uses: tailscale/github-action@v2
         with: 
-          authkey: &{{ secrets.TAILSCALE_AUTHKEY }}
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
 
-      - name: Deploy to server
+      - name: Deploy to server     
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: 107.74.35.34
+          host: ${{ secrets.SSH_HOST }} 
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
           script: |
