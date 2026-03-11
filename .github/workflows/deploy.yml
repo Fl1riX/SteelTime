@@ -18,6 +18,9 @@ jobs:
         with: 
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
 
+      - name: Wait for Tailscale
+        run: sleep 10
+
       - name: Deploy to server     
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -29,4 +32,4 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             docker compose up -d --build
-            docker system prune 
+            docker system prune -f
