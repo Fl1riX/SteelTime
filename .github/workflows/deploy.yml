@@ -1,23 +1,27 @@
 name: Deploy
 
-
 on:
   push:
     branches:
       - main
 
 concurrency:
-  group: deploy-${{ github.ref }} # Группа по ветке
-  cancel-in-progress: true # Отменяет предыдущие запуски
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to server
+      - name: Connect to tailscale 
+        uses: tailscale/github-action@v2
+        with: 
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+
+      - name: Deploy to server     
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.SSH_HOST }}
+          host: ${{ secrets.SSH_HOST }} 
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
           script: |
@@ -25,4 +29,4 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             docker compose up -d --build
-            docker system prune -f
+            docker system prune 
