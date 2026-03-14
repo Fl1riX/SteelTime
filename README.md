@@ -12,6 +12,7 @@
 [![CD](https://github.com/Fl1riX/SteelTime/actions/workflows/deploy.yml/badge.svg?branch=main&event=push)](https://github.com/Fl1riX/SteelTime/actions/workflows/deploy.yml)
 [![Coveralls](https://coveralls.io/repos/github/Fl1riX/SteelTime/badge.svg)](https://coveralls.io/github/FliriX/SteelTime)
 
+
 <br/>
 
 > **SteelTime** — сервис онлайн-записи на услуги с REST API и Telegram-ботом.  
