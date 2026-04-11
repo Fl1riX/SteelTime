@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
-from jose import JWTError, jwt
+from jose import jwt
+from jwt import PyJWTError
 from passlib.context import CryptContext
 from src.logger import logger
 from src.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
@@ -44,7 +45,7 @@ def decode_token(token: str) -> dict | None:
             SECRET_KEY, 
             algorithms=[ALGORITHM], 
             options={
-                "require_exp": True,      # проверяем сровк действия токена
+                "require_exp": True,      # проверяем сроок действия токена
                 "verify_signature": True  # проверяем подпись
             }
         ) # декодируем токен
@@ -52,16 +53,17 @@ def decode_token(token: str) -> dict | None:
         
         sub_value = payload.get("sub") # извлекаем данные о пользователе "sub" = subject
         if sub_value is None:
-            logger.warning("токен не содержит sub")
+            logger.warning("Токен не содержит sub")
             return None
             
         try:
             sub_value = int(sub_value)
         except (TypeError, ValueError):
-            logger.error(f"не верный sub_value, ожидался int: {sub_value}")
+            logger.error(f"Не верный sub_value, ожидался int: {sub_value}")
+            return None
         
         logger.info(f"Полученный user_id: {sub_value}")
         return {"sub": sub_value}
-    except JWTError as e:
+    except PyJWTError as e:
         logger.warning(f"Невалидный токен: {e}")
         return None
