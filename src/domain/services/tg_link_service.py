@@ -42,12 +42,11 @@ class TgLinkService:
         try:
             db.add(link_token)
             await db.commit()
+            logger.info(f"Сохранен link токен: tg_id={link_token.telegram_id}")
         except Exception as e:
             await db.rollback()
             logger.warning(f"Ошибка: {e}, откат изменений...")
             
-        logger.info(f"Сохранен link токен: tg_id={link_token.telegram_id}")
-    
     @staticmethod
     async def check_magic_token(token: str, db: AsyncSession) -> MagicTokens | None:
         """
@@ -89,9 +88,11 @@ class TgLinkService:
 
         link_token.used = True
         link_token.telegram_linked_at = datetime.now(timezone.utc)
+        
+        logger.info(f"Привязка: user={user.id}, tg={link_token.telegram_id}")
         await db.commit()
         
-        logger.info(f"Привязка удалась: user={user.id}, tg={link_token.telegram_id}")
+        logger.info("Привязка прошла успешно!")
     
     @staticmethod
     async def find_token(token: str, db: AsyncSession) -> bool:
