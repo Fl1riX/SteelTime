@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
-from jose import jwt
-from jwt import PyJWTError
+from jose import jwt, JWTError
 from passlib.context import CryptContext
 from src.logger import logger
 from src.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
@@ -64,6 +63,6 @@ def decode_token(token: str) -> dict | None:
         
         logger.info(f"Полученный user_id: {sub_value}")
         return {"sub": sub_value}
-    except PyJWTError as e:
+    except JWTError as e:
         logger.warning(f"Невалидный токен: {e}")
         return None
