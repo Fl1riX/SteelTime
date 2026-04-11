@@ -1,4 +1,4 @@
-name: CI/CD SteelTime # Название, которое будет отображаться в Actions на github
+name: Continuous Integration # Название, которое будет отображаться в Actions на github
 
 on:  # События. Запускаются при пуше в main или develop, или при создании pull request в main 
   push: 
