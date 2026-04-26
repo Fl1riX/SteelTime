@@ -9,3 +9,9 @@ __pycache__/
 .vscode
 db_test_data.py
 TODO.md
+.idea
+.gigaide
+.ruff_cache
+.pytest_cache
+.mypy_cache
+coverage.xml
