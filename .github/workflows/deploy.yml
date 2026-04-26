@@ -18,9 +18,6 @@ jobs:
         with: 
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
 
-      - name: Wait for Tailscale
-        run: sleep 10
-
       - name: Deploy to server     
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -28,6 +25,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
           script: |
+            set -e
             cd ~/SteelTime
             git fetch origin main
             git reset --hard origin/main
