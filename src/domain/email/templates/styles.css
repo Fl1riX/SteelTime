@@ -1,0 +1,20 @@
+.sumbit {
+    background-color: rgb(235, 235, 235);
+    border-radius: 10px;
+    text-align: center;
+    width: 40%;
+    height: 20%;
+    padding: 20px;
+    margin: 50px auto;
+    border: 10px solid darkgray;
+}
+
+.sumbit a {
+    display: inline-block;
+    background-color: #007bff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: black;
+    margin-top: 10px;
+    text-decoration: none; /* убираем подчеркивание */
+}
