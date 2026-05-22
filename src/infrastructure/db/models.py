@@ -49,6 +49,7 @@ class User(Base):
       back_populates="user",
       cascade="all, delete-orphan", # каскадная операция, при удалении удалятся все связанные данные
       lazy="selectin", # загружает все через два оптимизированных запроса, контролирует когда загружать связанные данные
+      foreign_keys="[Appointment.user_id]",
     ) # ссылаеся на записи 
     users_appointments: Mapped[List["Appointment"]] = relationship(
       back_populates="entrepreneur",
