@@ -9,9 +9,11 @@ __pycache__/
 .vscode
 db_test_data.py
 TODO.md
+cloudflared.deb
 .idea
-.gigaide
-.ruff_cache
-.pytest_cache
 .mypy_cache
+.pytest_cache
+.ruff_cache
+.gigaide
 coverage.xml
+.coverage

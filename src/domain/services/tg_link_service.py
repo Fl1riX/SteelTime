@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
-from src.infrastructure.db.models import User,  MagicTokens
+from src.infrastructure.db.models import User,  MagicToken
 from src.logger import logger
 
 class TgLinkService:
@@ -34,7 +34,7 @@ class TgLinkService:
             db: AsyncSession
         -> Null
         """
-        link_token = MagicTokens(
+        link_token = MagicToken(
             telegram_id=telegram_id,
             token=token,
             expires_at=expires_at
@@ -48,27 +48,27 @@ class TgLinkService:
             logger.warning(f"Ошибка: {e}, откат изменений...")
             
     @staticmethod
-    async def check_magic_token(token: str, db: AsyncSession) -> MagicTokens | None:
+    async def check_magic_token(token: str, db: AsyncSession) -> MagicToken | None:
         """
         Проверка существования magic токена в бд
             token: str
             db: AsyncSession
-        -> MagicTokens | None
+        -> MagicToken | None
         """
-        result = await db.execute(select(MagicTokens).where(
-            MagicTokens.token == token,
-            MagicTokens.expires_at > datetime.now(),
-            MagicTokens.used == False  # noqa: E712
+        result = await db.execute(select(MagicToken).where(
+            MagicToken.token == token,
+            MagicToken.expires_at > datetime.now(),
+            MagicToken.used == False  # noqa: E712
         ))
         link_token = result.scalar_one_or_none()
         return link_token
             
     @staticmethod
-    async def link_account(db: AsyncSession, link_token: MagicTokens, user: User):
+    async def link_account(db: AsyncSession, link_token: MagicToken, user: User):
         """
         Привязываем телеграм бота к аккаунту
             db: AsyncSession
-            link_token: MagicTokens
+            link_token: MagicToken
             user: User
         -> Null
         """
@@ -103,8 +103,8 @@ class TgLinkService:
         -> bool
         """
         logger.info("Поиск токен в базе данных")
-        result = await db.execute(select(MagicTokens).where(
-            MagicTokens.token == token
+        result = await db.execute(select(MagicToken).where(
+            MagicToken.token == token
         ))
         found_token = result.scalars().first()
         if not found_token:

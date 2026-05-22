@@ -38,7 +38,7 @@ async def test_update_user_password(db_session):
     user = result.scalars().first()
     
     assert user is not None, "Такого пользователя нет"
-    assert user.password != new_user_data.new_password, "Парол не обновился"
+    assert user.password != new_user_data.new_password, "Пароль не обновился"
     
 @pytest.mark.asyncio
 async def test_find_user_registration(db_session):

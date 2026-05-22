@@ -2,7 +2,7 @@ from sqlalchemy import delete, or_
 from datetime import datetime, timezone
 
 from .get_db import SessionLocal
-from src.infrastructure.db.models import MagicTokens
+from src.infrastructure.db.models import MagicToken
 from src.logger import logger
 
 async def cleanup_telegram_tokens():
@@ -10,10 +10,10 @@ async def cleanup_telegram_tokens():
     async with SessionLocal() as db:
         logger.info("🔍 Очистка токенов...")
         try:
-            await db.execute(delete(MagicTokens).where(
+            await db.execute(delete(MagicToken).where(
             or_(
-                MagicTokens.used,
-                MagicTokens.expires_at < datetime.now(timezone.utc)
+                MagicToken.used,
+                MagicToken.expires_at < datetime.now(timezone.utc)
             )
             ))
             await db.commit()

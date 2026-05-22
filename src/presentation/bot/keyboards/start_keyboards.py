@@ -7,7 +7,7 @@ def get_link_keyboard(token: str) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         builder.button(
                 text="🔗 Привязать аккаунт 🌐", 
-                url=f"http://127.0.0.1:8000/api/v1/auth/login-link?token={token}"
+                url=f"http://localhost:8000/api/v1/auth/login-link?token={token}"
         )
         builder.adjust(1) # 1 кнопка в ряд
         return builder.as_markup()

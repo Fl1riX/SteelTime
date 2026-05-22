@@ -12,7 +12,9 @@ async def start_handler(message: types.Message):
     if not message.from_user:
         await message.answer("Ошибка: нет данных")
     
-    assert message.from_user is not None # проверяет условие: если True ничего не происходит, если False, то вызывается AssertError
+    if message.from_user is None: 
+        logger.error("Сообщение от пользователя = None")
+        return
     
     name = message.from_user.full_name or message.from_user.first_name or "Пользователь"
     user_id = message.from_user.id
@@ -23,8 +25,9 @@ async def start_handler(message: types.Message):
     if not tg_linked.connected:
         token = await generate_magic_token(user_id)
         if token:
-            kb = start_keyboards.get_link_keyboard(token)
-            await message.answer(f"Приветствуем, вас {name}, в чатботе сервиса SteelTime. Привяжите бота к аккаунту серваса или зарегистрируйтесь, чтобы получать отсюда уведомления и напоминания, связанные с вашими записями", reply_markup=kb)
+            #kb = start_keyboards.get_link_keyboard(token)
+            #await message.answer(f"Приветствуем, вас {name}, в чатботе сервиса SteelTime. Привяжите бота к аккаунту серваса или зарегистрируйтесь, чтобы получать отсюда уведомления и напоминания, связанные с вашими записями", reply_markup=kb)
+            await message.answer(f"http://localhost:8000/api/v1/auth/login-link?token={token}")
         else:
             logger.warning(f"Ошибка генерации ссылки для привязки аккаунта пользователя: {user_id}")
     else: 
