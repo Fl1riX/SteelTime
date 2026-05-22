@@ -238,18 +238,21 @@ class Ban(Base):
   def is_active(self) -> bool:
     if self.revoked_at is not None:
       return False
+    
     if self.expires_at is None:
       return True
+    
     return self.expires_at > datetime.now(timezone.utc) # Вернет True или False в зависисмотсти от того, что время бана прошло или нет
   
   @validates("expires_at")
   def validate_expires_at(self, key, value):
-    if value <= datetime.now(timezone.utc) and value is not None:
-      raise ValueError
+    if value is not None:
+      if value <= datetime.now(timezone.utc):
+        raise ValueError("expires_at не должно быть в прошлом или None")
     return value
     
   @validates("banned_at")
   def validate_banned_at(self, key, value):
     if value > datetime.now(timezone.utc):
-      raise ValueError
+      raise ValueError("banned_at не должно быть в будущем")
     return value
