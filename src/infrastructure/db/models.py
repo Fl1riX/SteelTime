@@ -256,3 +256,17 @@ class Ban(Base):
     if value > datetime.now(timezone.utc):
       raise ValueError("banned_at не должно быть в будущем")
     return value
+
+  @validates("revoked_at")
+  def validate_revoked_at(self, key, value):
+    if value is None:
+      return value
+    
+    if value > datetime.now(timezone.utc):
+      raise ValueError("revoked_at не должно быть в будущем")
+    
+    if self.banned_at is not None:
+      if value < self.banned_at:
+        raise ValueError("banned_at не должно быть позже revoked_at")
+    
+    return value 
