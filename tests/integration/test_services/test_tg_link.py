@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import select
 
 from src.domain.services.tg_link_service import TgLinkService
-from src.infrastructure.db.models import MagicTokens, User
+from src.infrastructure.db.models import MagicToken, User
 
 @pytest.mark.asyncio
 async def test_save_link_token(db_session):
@@ -24,8 +24,8 @@ async def test_save_link_token(db_session):
     # ======== Assert (Проверка) ==========
     # читаем из бд
     result = await db_session.execute(
-        select(MagicTokens).where(
-            MagicTokens.token == token
+        select(MagicToken).where(
+            MagicToken.token == token
         )
     )
     saved_token = result.scalar_one()
@@ -37,7 +37,7 @@ async def test_save_link_token(db_session):
 @pytest.mark.asyncio
 async def test_find_token(db_session):
     """Ищет токен в БД"""
-    test_token = MagicTokens(
+    test_token = MagicToken(
         telegram_id=1239517536,
         token="test_token_779",
         expires_at=datetime.now() + timedelta(minutes=10)
@@ -53,7 +53,7 @@ async def test_find_token(db_session):
 @pytest.mark.asyncio
 async def test_link_account(db_session):
     """Привязываем телеграм бота к аккаунту"""
-    test_token = MagicTokens(
+    test_token = MagicToken(
         telegram_id=1239517536,
         token="test_token_778",
         expires_at=datetime.now(timezone.utc) + timedelta(minutes=10)
@@ -76,8 +76,8 @@ async def test_link_account(db_session):
     )
     
     result = await db_session.execute(
-        select(MagicTokens).where(
-            MagicTokens.token == "test_token_778"
+        select(MagicToken).where(
+            MagicToken.token == "test_token_778"
         )
     )
     linked_token = result.scalar_one()
@@ -91,7 +91,7 @@ async def test_check_magic_token(db_session):
     Тест проверки существования magic токена в бд
     """    
     test_token = "super_magic_token_lol_005"
-    token = MagicTokens(
+    token = MagicToken(
         telegram_id=1593577496,
         token=test_token,
         expires_at=datetime.now() + timedelta(minutes=10)

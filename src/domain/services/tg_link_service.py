@@ -53,7 +53,7 @@ class TgLinkService:
         Проверка существования magic токена в бд
             token: str
             db: AsyncSession
-        -> MagicTokens | None
+        -> MagicToken | None
         """
         result = await db.execute(select(MagicToken).where(
             MagicToken.token == token,
@@ -68,7 +68,7 @@ class TgLinkService:
         """
         Привязываем телеграм бота к аккаунту
             db: AsyncSession
-            link_token: MagicTokens
+            link_token: MagicToken
             user: User
         -> Null
         """
