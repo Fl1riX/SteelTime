@@ -11,7 +11,7 @@ async def check_registration(user_id: str) -> TgLinkStatus:
     try:
         async with httpx.AsyncClient(timeout=httpx.Timeout(5.0, read=10.0)) as client:
             logger.info("Отправка запроса к api...")
-            response = await client.get(f"http://localhost:8000/api/v1/users/check_tg_link/{user_id}")
+            response = await client.get(f"http://api:8000/api/v1/users/check_tg_link/{user_id}")
 
             if response.status_code == 200:
                 data = response.json()
@@ -36,7 +36,7 @@ async def get_user_profile(user_id: str):
     """Получает информацию о пользователе"""
     try:
         async with httpx.AsyncClient(timeout=httpx.Timeout(5.0, read=10.0)) as client:
-            response = await client.get(f"http://localhost:8000/api/v1/users/{user_id}")
+            response = await client.get(f"http://api:8000/api/v1/users/{user_id}")
             
             if response.status_code == 200:
                 return response.json()
@@ -53,12 +53,12 @@ async def generate_magic_token(tg_id: int) -> str | None:
     try:
         async with httpx.AsyncClient(timeout=httpx.Timeout(5.0, read=10.0)) as client:
             logger.info(f"Отвправка запроса на генерацию magic токна для пользователя: {tg_id}...")
-            response = await client.get(f"http://127.0.0.1:8000/api/v1/auth/telegram/generate-link/{tg_id}")
+            response = await client.get(f"http://api:8000/api/v1/auth/telegram/generate-link/{tg_id}")
             
             if response.status_code == 200:
                 data = response.json()
                 link_token = data.get("token", None)
-                logger.info(f"Тоекн для привязки акканута {tg_id}: {link_token}")
+                logger.info(f"Токен для привязки акканута {tg_id}: {link_token}")
                 return link_token
             else:
                 return None
