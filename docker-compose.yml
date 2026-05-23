@@ -18,11 +18,7 @@ services:
     mem_reservation: 256m
   
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile.api
-      args: # Кэш для быстрой сборки
-        - BUILDKIT_INLINE_CACHE=1
+    image: ghcr.io/fl1rix/steeltime-api:latest
     ports: 
       - "8000:8000" # Формат: порт на пк: порт в контейнере
     env_file:
@@ -42,11 +38,7 @@ services:
 
   
   bot:
-    build:
-      context: .
-      dockerfile: Dockerfile.bot
-      args: # Кэш для быстрой сборки
-        - BUILDKIT_INLINE_CACHE=1
+    image: ghcr.io/fl1rix/steeltime-bot:latest
     restart: unless-stopped
     env_file:
       - .env
@@ -57,6 +49,12 @@ services:
         condition: service_healthy
     mem_limit: 256m
     cpus: 0.25
+
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 300
 
 volumes:
   postgres_data:
