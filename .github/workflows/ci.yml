@@ -107,7 +107,9 @@ jobs: # Задачи
           context: .
           file: Dockerfile.api
           push: true
-          tags: ghcr.io/fl1rix/steeltime-api:latest
+          tags: |
+            ghcr.io/fl1rix/steeltime-api:latest
+            ghcr.io/fl1rix/steeltime-api:${{ github.sha }}
       - 
         name: Build and Push Bot
         uses: docker/build-push-action@v7
@@ -115,4 +117,6 @@ jobs: # Задачи
           context: .
           file: Dockerfile.bot
           push: true
-          tags: ghcr.io/fl1rix/steeltime-bot:latest
+          tags: |
+            ghcr.io/fl1rix/steeltime-bot:latest  
+            ghcr.io/fl1rix/steeltime-bot:${{ github.sha }}
