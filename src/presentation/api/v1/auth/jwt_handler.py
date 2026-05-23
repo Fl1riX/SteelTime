@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from src.logger import logger
@@ -19,7 +19,7 @@ def create_access_token(data: dict) -> str:
     """Создаем JWT токен"""
     logger.info("Создание JWT токена...")
     to_encode = data.copy() # копируем данные, чтобы не менять исходный словарь
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES) # через сколько токен становится не действительным 
+    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES) # через сколько токен становится не действительным 
     to_encode.update(
         {
             "exp": expire,
