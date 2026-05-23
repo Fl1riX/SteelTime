@@ -6,8 +6,7 @@ from src.config import DATABASE_URL
 DB_URL = f"postgresql+asyncpg://{DATABASE_URL}"
 
 engine = create_async_engine(
-    DB_URL, 
-    echo=True # для отладки 
+    DB_URL
 )
 
 SessionLocal = async_sessionmaker(
