@@ -10,7 +10,6 @@ from src.infrastructure.db.database import get_db
 from src.domain.services.tg_link_service import TgLinkService
 from src.presentation.api.v1.exceptions import NotCorrect, NoAccess
 from src.logger import logger
-from src.config import BOT_SECRET
 
 router = APIRouter(prefix="/auth", tags=["Магические ссылки"])
 limiter = Limiter(key_func=get_remote_address)
@@ -32,8 +31,16 @@ async def create_telegram_magic_link(
     
     logger.info("Проверка заголовка X-Bot-Secret...")
     bot_secret_header = request.headers.get("X-Bot-Secret")
-    if bot_secret_header != BOT_SECRET:
-        logger.info("Заголовок X-Bot-Secret не совпадает с секретным ключем")
+    
+    if not bot_secret_header:
+        logger.info("В заголовке отсутствует секретный ключ")
+        raise NoAccess("Недостаточно прав для доступа к этому ресурсу")
+    
+    logger.info("Сравнение ключей...")
+    verify_key = TgLinkService.verify_bot_secret_key(bot_secret_header)
+    
+    if not verify_key:
+        logger.info("Предоставленый ключ не совпадает с секретным ключем")
         raise NoAccess("Недостаточно прав для доступа к этому ресурсу")
     
     logger.info("Проверка наличия привязки аккаунта к платформе...")
@@ -43,6 +50,8 @@ async def create_telegram_magic_link(
     
     token = secrets.token_urlsafe(32)
     expires = datetime.now(timezone.utc) + timedelta(minutes=10)
+    
+    #! TODO: Добавить изоляцию на уровне docker
     
     logger.info("Сохранение magic токена...")
     await TgLinkService.save_link_token(token=token, expires_at=expires, db=db, telegram_id=telegram_id)
