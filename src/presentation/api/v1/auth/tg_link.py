@@ -28,12 +28,15 @@ async def create_telegram_magic_link(
         db: AsyncSession
     -> dict
     """
-    logger.debug(f"Получен tg_id: {telegram_id}")
+    logger.debug(f"Получен запрос на привязку аккаунта к боту tg_id: {telegram_id}")
     
+    logger.info("Проверка заголовка X-Bot-Secret...")
     bot_secret_header = request.headers.get("X-Bot-Secret")
     if bot_secret_header != BOT_SECRET:
+        logger.info("Заголовок X-Bot-Secret не совпадает с секретным ключем")
         raise NoAccess("Недостаточно прав для доступа к этому ресурсу")
     
+    logger.info("Проверка наличия привязки аккаунта к платформе...")
     if await TgLinkService.check_telegram_connection(telegram_id, db):
         logger.warning(f"Этот аккаунт телеграм уже привязан к платформе: {telegram_id}")
         raise NotCorrect("Этот аккаунт телеграм уже привязан к платформе")
@@ -43,6 +46,7 @@ async def create_telegram_magic_link(
     
     logger.info("Сохранение magic токена...")
     await TgLinkService.save_link_token(token=token, expires_at=expires, db=db, telegram_id=telegram_id)
+    logger.info("Токен успешно сохранен!")
     
     return {"token": token}
 
