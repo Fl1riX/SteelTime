@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+BOT_SECRET = os.getenv("BOT_SECRET")
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
