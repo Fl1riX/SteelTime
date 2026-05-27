@@ -3,6 +3,7 @@ from async_lru import alru_cache
 
 from src.logger import logger
 from src.shared.schemas.bot.tg_link import TgLinkStatus
+from src.config import BOT_SECRET
 
 @alru_cache(maxsize=512, ttl=300) # кэширование, хранить максимум 512 результатов, удалсять через 300 секунд
 async def check_registration(user_id: str) -> TgLinkStatus:
@@ -52,8 +53,12 @@ async def generate_magic_token(tg_id: int) -> str | None:
     """Отправляет запрос к api на создание magic токена"""
     try:
         async with httpx.AsyncClient(timeout=httpx.Timeout(5.0, read=10.0)) as client:
-            logger.info(f"Отвправка запроса на генерацию magic токна для пользователя: {tg_id}...")
-            response = await client.get(f"http://api:8000/api/v1/auth/telegram/generate-link/{tg_id}")
+            logger.info(f"Отправка запроса на генерацию magic токна для пользователя: {tg_id}...")
+            
+            headers = {
+                "X-Bot-Secret": BOT_SECRET
+            }
+            response = await client.get(f"http://api:8000/api/v1/auth/telegram/generate-link/{tg_id}", headers=headers)
             
             if response.status_code == 200:
                 data = response.json()
