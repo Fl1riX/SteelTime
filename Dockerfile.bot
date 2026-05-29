@@ -22,15 +22,16 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # -m создает домашнюю директорию пользователя.
 # -r -  создает системного пользователя(служебная учетка с ограниченными правами)
 # через chown рекурсивно(-R) меняем права доступа на файлах каталога для пользователя app, группы app (app:app)
-RUN useradd -m -r app && \ 
-    chown -R app:app /app
-
-USER app
 
 COPY src/presentation/bot ./src/presentation/bot
 COPY src/logger.py ./src/
 COPY src/domain/services ./src/domain/services
 COPY src/shared/ ./src/shared/
 COPY src/config.py ./src/
+
+RUN useradd -m -r app && \
+    chown -R app:app /app
+
+USER app
 
 CMD ["python", "-m", "src.presentation.bot.handlers.bot"]
