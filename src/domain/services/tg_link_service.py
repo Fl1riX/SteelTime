@@ -1,11 +1,32 @@
+import hmac
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
 from src.infrastructure.db.models import User,  MagicToken
+from src.config import BOT_SECRET
 from src.logger import logger
 
 class TgLinkService:
+    @staticmethod
+    def verify_bot_secret_key(bot_secret_header: str):
+        """
+        Сравниваем секретный ключ с полученным ключом в заголовке.
+        Устранена возможность timing-атаки.
+        """
+        if not BOT_SECRET:
+            raise RuntimeError("Не задан секретный ключ X-Bot-Secret")
+        
+        result =  hmac.compare_digest(
+            bot_secret_header.encode(),
+            BOT_SECRET.encode()
+        )
+        if not result:
+            logger.warning("Неверный ключ в X-Bot-Secret. Возможна попытка атаки!")
+        
+        return result
+    
     @staticmethod
     async def check_telegram_connection(tg_id: int, db: AsyncSession) -> User | None:
         """
