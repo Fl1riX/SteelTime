@@ -16,6 +16,8 @@ services:
       - postgres_data:/var/lib/postgresql/data # стандартное мето хранения файлов postgres (имя_volume:путь внутри контейнера)
     mem_limit: 512m
     mem_reservation: 256m
+    networks:
+      - api_db_net
   
   api:
     image: ghcr.io/fl1rix/steeltime-api:latest
@@ -35,6 +37,9 @@ services:
     restart: unless-stopped
     mem_limit: 1g # Лимиты ресурсов
     cpus: 0.5
+    networks:
+      - api_bot_net
+      - api_db_net
 
   
   bot:
@@ -49,6 +54,8 @@ services:
         condition: service_healthy
     mem_limit: 256m
     cpus: 0.25
+    networks:
+      - api_bot_net
 
   watchtower:
     image: containrrr/watchtower
@@ -61,6 +68,9 @@ volumes:
     driver: local
 
 networks:
-  default:
+  api_db_net: 
     driver: bridge
-    name: steeltime_network
+    internal: true
+  
+  api_bot_net: 
+    driver: bridge
