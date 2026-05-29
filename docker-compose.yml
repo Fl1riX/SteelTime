@@ -18,6 +18,8 @@ services:
     mem_reservation: 256m
     networks:
       - api_db_net
+    security_opt:
+      - no-new-privileges:true # Запрет на повышение прав до root
   
   api:
     image: ghcr.io/fl1rix/steeltime-api:latest
@@ -40,8 +42,14 @@ services:
     networks:
       - api_bot_net
       - api_db_net
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp
 
-  
   bot:
     image: ghcr.io/fl1rix/steeltime-bot:latest
     restart: unless-stopped
@@ -56,12 +64,23 @@ services:
     cpus: 0.25
     networks:
       - api_bot_net
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: # Забирает все доступные привелегии у root пользователя.
+      - ALL
+    tmpfs: # Папко, доступная длоя записи инфорамции, ы случае надобности.
+      - /tmp
 
   watchtower:
     image: containrrr/watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 300
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
 
 volumes:
   postgres_data:
