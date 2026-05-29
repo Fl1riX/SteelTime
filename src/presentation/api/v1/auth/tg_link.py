@@ -38,9 +38,9 @@ async def create_telegram_magic_link(
     
     logger.info("Сравнение ключей...")
     verify_key = TgLinkService.verify_bot_secret_key(bot_secret_header)
-    
+
     if not verify_key:
-        logger.info("Предоставленый ключ не совпадает с секретным ключем")
+        logger.info("Предоставленный ключ не совпадает с секретным ключом")
         raise NoAccess("Недостаточно прав для доступа к этому ресурсу")
     
     logger.info("Проверка наличия привязки аккаунта к платформе...")
