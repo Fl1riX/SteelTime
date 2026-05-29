@@ -5,6 +5,9 @@ FROM python:3.13-slim
 # создаем папку /app. Весь код будет тут
 WORKDIR /app
 
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
 # Копируем только requrements.txt(кэшируется)
 COPY requirements.txt .
 
@@ -17,6 +20,9 @@ COPY . .
 
 RUN rm -rf /app/src/bot
 RUN chmod +x entrypoint.sh
+
+RUN useradd -m -r app
+USER app
 
 # Открываем порт
 EXPOSE 8000
