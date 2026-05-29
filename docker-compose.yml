@@ -16,6 +16,10 @@ services:
       - postgres_data:/var/lib/postgresql/data # стандартное мето хранения файлов postgres (имя_volume:путь внутри контейнера)
     mem_limit: 512m
     mem_reservation: 256m
+    networks:
+      - api_db_net
+    security_opt:
+      - no-new-privileges:true # Запрет на повышение прав до root
   
   api:
     image: ghcr.io/fl1rix/steeltime-api:latest
@@ -35,8 +39,17 @@ services:
     restart: unless-stopped
     mem_limit: 1g # Лимиты ресурсов
     cpus: 0.5
+    networks:
+      - api_bot_net
+      - api_db_net
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp
 
-  
   bot:
     image: ghcr.io/fl1rix/steeltime-bot:latest
     restart: unless-stopped
@@ -49,18 +62,34 @@ services:
         condition: service_healthy
     mem_limit: 256m
     cpus: 0.25
+    networks:
+      - api_bot_net
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: # Забирает все доступные привилегии у root пользователя.
+      - ALL
+    tmpfs: # Папка, доступная для записи инфорамции, в случае надобности.
+      - /tmp
 
   watchtower:
     image: containrrr/watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 300
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
 
 volumes:
   postgres_data:
     driver: local
 
 networks:
-  default:
+  api_db_net: 
     driver: bridge
-    name: steeltime_network
+    internal: true
+  
+  api_bot_net: 
+    driver: bridge

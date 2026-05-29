@@ -51,8 +51,6 @@ async def create_telegram_magic_link(
     token = secrets.token_urlsafe(32)
     expires = datetime.now(timezone.utc) + timedelta(minutes=10)
     
-    #! TODO: Добавить изоляцию на уровне docker
-    
     logger.info("Сохранение magic токена...")
     await TgLinkService.save_link_token(token=token, expires_at=expires, db=db, telegram_id=telegram_id)
     logger.info("Токен успешно сохранен!")
