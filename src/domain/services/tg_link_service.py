@@ -11,9 +11,9 @@ from src.logger import logger
 class TgLinkService:
     @staticmethod
     def verify_bot_secret_key(bot_secret_header: str):
-        """  
-        Сравниваем секретный ключ с полученным ключем в заголовке. 
-        Устранена возможность timig атаки.
+        """
+        Сравниваем секретный ключ с полученным ключом в заголовке.
+        Устранена возможность timing-атаки.
         """
         if not BOT_SECRET:
             raise RuntimeError("Не задан секретный ключ X-Bot-Secret")
@@ -23,7 +23,7 @@ class TgLinkService:
             BOT_SECRET.encode()
         )
         if not result:
-            logger.warning("Не верный ключ в X-Bot-Secret. Возможна попытка атаки!")
+            logger.warning("Неверный ключ в X-Bot-Secret. Возможна попытка атаки!")
         
         return result
     
