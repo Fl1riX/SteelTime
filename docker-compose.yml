@@ -2,6 +2,7 @@ services:
 
   db:  
     image: postgres:15-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${DATABASE_USER} 
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
@@ -31,8 +32,8 @@ services:
       db:
         condition: service_healthy # Ждем пока БД будет реально готова к работе, а не просто стартовал контейнер
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
-      interval: 10s
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
       timeout: 5s
       retries: 5
       start_period: 60s
@@ -76,7 +77,7 @@ services:
     image: containrrr/watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 300
+    command: --interval 300 --cleanup
     security_opt:
       - no-new-privileges:true
     tmpfs:
