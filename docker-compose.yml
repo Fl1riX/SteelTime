@@ -2,6 +2,7 @@ services:
 
   db:  
     image: postgres:15-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${DATABASE_USER} 
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
@@ -31,7 +32,7 @@ services:
       db:
         condition: service_healthy # Ждем пока БД будет реально готова к работе, а не просто стартовал контейнер
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 10s
       timeout: 5s
       retries: 5

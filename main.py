@@ -60,6 +60,11 @@ def welcome(request: Request):
         "message": "Добро пожаловать в SteelTime",
         "detail": "Документация http://localhost:8000/docs"
     }
+    
+@app.get("/health")
+@limiter.limit("5/minutes")
+def health_checker(request: Request):
+    return {"status": "ok"}
 
 if __name__ == "__main__":
     uvicorn.run(app, port=8000, reload=True)
