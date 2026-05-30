@@ -81,7 +81,7 @@ class User(Base):
         if not isinstance(value, datetime) and value is not None:
             logger.warning("Некорректная дата")
             raise TypeError("Некорректная дата")
-        elif value > datetime.utcnow():
+        elif value > datetime.now(timezone.utc):
             logger.warning("Дата регистрации не может быть в будущем")
             raise ValueError("Дата регистрации не может быть в будущем")
         return value

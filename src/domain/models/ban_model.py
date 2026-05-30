@@ -75,7 +75,7 @@ class Ban(Base):
     def validate_expires_at(self, key, value):
         if value is not None:
             if value <= datetime.now(timezone.utc):
-                raise ValueError("expires_at не должно быть в прошлом или None")
+                raise ValueError("expires_at не должно быть в прошломgit")
             if value <= self.banned_at:
                 raise ValueError("expires_at не может быть меньше banned_at")
         return value
@@ -96,6 +96,6 @@ class Ban(Base):
 
         if self.banned_at is not None:
             if value < self.banned_at:
-                raise ValueError("banned_at не должно быть позже revoked_at")
+                raise ValueError("banned_at должно быть позже revoked_at")
 
         return value
