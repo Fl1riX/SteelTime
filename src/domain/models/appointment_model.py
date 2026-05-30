@@ -4,7 +4,6 @@ from sqlalchemy import DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from src.infrastructure.db.database import Base
-from src.domain.models.user_model import User
 from src.domain.models.service_model import Service
 from src.logger import logger
 

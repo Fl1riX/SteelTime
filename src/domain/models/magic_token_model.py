@@ -1,10 +1,13 @@
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.infrastructure.db.database import Base
-from src.domain.models.user_model import User
+
+if TYPE_CHECKING:
+  from src.domain.models.user_model import User
 
 class MagicToken(Base):
     """Магические токены для привязки аккаунта к телеграм боту.

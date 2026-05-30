@@ -1,15 +1,17 @@
 from datetime import datetime, timezone
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, Enum, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from src.infrastructure.db.database import Base
 from src.logger import logger
-from src.domain.models.ban_model import Ban
-from src.domain.models.appointment_model import Appointment
-from src.domain.models.magic_token_model import MagicToken
-from src.domain.models.service_model import Service
+
+if TYPE_CHECKING:
+    from src.domain.models.ban_model import Ban
+    from src.domain.models.appointment_model import Appointment
+    from src.domain.models.magic_token_model import MagicToken
+    from src.domain.models.service_model import Service
 
 class User(Base):
     """

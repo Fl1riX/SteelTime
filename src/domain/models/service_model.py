@@ -1,11 +1,13 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.infrastructure.db.database import Base
-from src.domain.models.user_model import User
-from src.domain.models.appointment_model import Appointment
+
+if TYPE_CHECKING:
+    from src.domain.models.user_model import User
+    from src.domain.models.appointment_model import Appointment
 
 
 class Service(Base):

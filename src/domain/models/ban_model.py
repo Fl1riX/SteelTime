@@ -1,10 +1,13 @@
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from src.infrastructure.db.database import Base
-from src.domain.models.user_model import User
+
+if TYPE_CHECKING:
+    from src.domain.models.user_model import User
 
 
 class Ban(Base):
