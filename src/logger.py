@@ -9,4 +9,8 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s') # з�
 console_handler = logging.StreamHandler() # вывод логов в консоль
 console_handler.setFormatter(formatter)
 
+handler = logging.FileHandler(filename="SteelTime.log", encoding="utf-8") # файл для записи логов
+handler.setFormatter(formatter)
+
+logger.addHandler(handler)
 logger.addHandler(console_handler)
