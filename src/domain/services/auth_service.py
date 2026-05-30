@@ -2,7 +2,7 @@ from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.shared.schemas import auth_schema
-from src.infrastructure.db.models import User
+from src.domain.models import User
 from src.logger import logger
 from src.presentation.api.v1.auth.jwt_handler import hash_password
 from src.domain.services.exceptions import UserNotFound

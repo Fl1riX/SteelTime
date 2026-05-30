@@ -3,7 +3,8 @@ import pytest_asyncio
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
-from src.infrastructure.db.models import Base
+from src.domain.models import Appointment, Ban, MagicToken, Service, User  # noqa: F401
+from src.infrastructure.db.database import Base
 
 @pytest_asyncio.fixture(scope="function")
 async def db_session():

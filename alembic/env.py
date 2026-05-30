@@ -2,7 +2,7 @@ import asyncio
 
 from logging.config import fileConfig
 from src.infrastructure.db.database import Base
-from src.infrastructure.db.models import User, Service, Appointment  # noqa: F401
+from src.domain.models import Appointment, Ban, MagicToken, Service, User  # noqa: F401
 from src.config import DATABASE_URL
 
 from sqlalchemy.ext.asyncio import async_engine_from_config
