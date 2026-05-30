@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
-from src.infrastructure.db.models import User,  MagicToken
+from src.domain.models import MagicToken, User
 from src.config import BOT_SECRET
 from src.logger import logger
 
