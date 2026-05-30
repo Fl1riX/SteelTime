@@ -1,11 +1,16 @@
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
+from src.logger import logger
 from src.infrastructure.db.database import Base
 from src.domain.models.service_model import Service
-from src.logger import logger
+
+if TYPE_CHECKING:
+    from src.domain.models import User
+
 
 
 class Appointment(Base):
