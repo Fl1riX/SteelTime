@@ -1,5 +1,5 @@
 # глобальные фикстуры(это функции подготовки данных/окружения, которые автоматически запускаются ПЕРЕД ВСЕМИ тестами в проекте.)  для БД, API
-import pytest_asyncio
+import pytest_asyncio, os, pytest
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
@@ -9,6 +9,11 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sess
 #from src.domain.models.magic_token_model import MagicToken # noqa: F401
 #from src.domain.models.user_model import User  # noqa: F401
 from src.infrastructure.db.database import Base
+
+# autouse=True - функция автоматически выполняется перд каждым тестом
+@pytest.fixture(autouse=True) # фикстура автоматически применяется ко всем тестам
+def env():
+    os.environ["SECRET_KEY"] = "test_secret_key"  # Устанавливаем значение переменной окружения
 
 @pytest_asyncio.fixture(scope="function")
 async def db_session():
