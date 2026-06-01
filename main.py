@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi.middleware import SlowAPIMiddleware
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from contextlib import asynccontextmanager
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
 from src.presentation.api.v1.endpoints import router as endpoints_router
 from src.presentation.api.v1.auth.auth import router as auth_router
@@ -24,7 +24,13 @@ async def lifespan(app: FastAPI):
         DB_URL
     )
     
-    app.state.engine = engine
+    SessionLocal = async_sessionmaker(
+        bind=engine, 
+        class_=AsyncSession, 
+        expire_on_commit=False
+    )
+    
+    app.state.SessionLocal = SessionLocal
     # При старте выполняется ко до yiled
     yield
     # выполняется код после yiled и остановка
