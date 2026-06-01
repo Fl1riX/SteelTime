@@ -4,6 +4,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi.middleware import SlowAPIMiddleware
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from contextlib import asynccontextmanager
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
 from src.presentation.api.v1.endpoints import router as endpoints_router
 from src.presentation.api.v1.auth.auth import router as auth_router
@@ -12,6 +14,29 @@ from src.logger import logger
 from src.limiter import limiter
 from src.presentation.middlewares import MetricsMiddleware
 from src.infrastructure.tasks.cleanup_magic_tokens import cleanup_telegram_tokens
+from src.config import get_database_url
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    DB_URL = f"postgresql+asyncpg://{get_database_url()}"
+    
+    engine = create_async_engine(
+        DB_URL
+    )
+    
+    SessionLocal = async_sessionmaker(
+        bind=engine, 
+        class_=AsyncSession, 
+        expire_on_commit=False
+    )
+    
+    app.state.SessionLocal = SessionLocal
+    # При старте выполняется ко до yiled
+    yield
+    # выполняется код после yiled и остановка
+    
+    await engine.dispose()
+    
 
 app = FastAPI(
     title="SteelTime", 
@@ -19,8 +44,10 @@ app = FastAPI(
     description="Система для бронирования услуг",
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/openapi.json"
+    openapi_url="/openapi.json",
+    lifespan=lifespan
 )
+
 app.state.limiter = limiter
 app.add_middleware(MetricsMiddleware)
 app.add_middleware(SlowAPIMiddleware)
@@ -51,6 +78,8 @@ async def startup():
         minutes=5
     )
     scheduler.start()
+
+
 
 @app.get("/")
 @limiter.limit("5/minute")
