@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from src.logger import logger
-from src.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from src.config import get_secret_key, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 # настройка хэширования паролей
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto") 
@@ -31,7 +31,7 @@ def create_access_token(data: dict) -> str:
     if "sub" in to_encode:
         to_encode["sub"] = str(to_encode["sub"])
     
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM) # кодируем данные в токен
+    encoded_jwt = jwt.encode(to_encode, get_secret_key(), algorithm=ALGORITHM) # кодируем данные в токен
     logger.info(f"JWT токен создан для user_id={data.get('sub')}")
     return encoded_jwt
 
@@ -41,7 +41,7 @@ def decode_token(token: str) -> dict | None:
         logger.info("Декодирование токена...")
         payload = jwt.decode(
             token, 
-            SECRET_KEY, 
+            get_secret_key(), 
             algorithms=[ALGORITHM], 
             options={
                 "require_exp": True,      # проверяем сроок действия токена

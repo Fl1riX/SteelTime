@@ -1,24 +1,11 @@
-#from pathlib import Path
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import declarative_base
-from src.config import DATABASE_URL
-
-DB_URL = f"postgresql+asyncpg://{DATABASE_URL}"
-
-engine = create_async_engine(
-    DB_URL
-)
-
-SessionLocal = async_sessionmaker(
-    bind=engine, 
-    class_=AsyncSession, 
-    expire_on_commit=False
-)
+from fastapi import Request
 
 Base = declarative_base()
 
-async def get_db():
-    async with SessionLocal() as session:
+async def get_db(request: Request):
+    
+    async with request.app.state.SessionLocal() as session:
         try:
             yield session
         finally:

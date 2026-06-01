@@ -6,8 +6,17 @@ load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 BOT_SECRET = os.getenv("BOT_SECRET")
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+def get_database_url() -> str:
+    db_url = os.getenv("DATABASE_URL")
+    if not db_url:
+        raise RuntimeError("!!! В .env не задана DB_URL !!!")
+    return db_url
 
-SECRET_KEY = os.getenv("SECRET_KEY", "development-secret-key-i-love_coding")
+def get_secret_key() -> str:
+    secret = os.getenv("SECRET_KEY")
+    if not secret:
+        raise RuntimeError("!!! Не задан секретный ключ !!!")
+    return secret
+    
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
