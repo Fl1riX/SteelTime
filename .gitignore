@@ -17,4 +17,3 @@ cloudflared.deb
 .gigaide
 coverage.xml
 .coverage
-alembic.ini
