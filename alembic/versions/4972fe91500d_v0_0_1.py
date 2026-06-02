@@ -47,6 +47,7 @@ def upgrade() -> None:
     op.add_column('magic_tokens', sa.Column('user_id', sa.Integer(), nullable=True))
     op.create_foreign_key(None, 'magic_tokens', 'users', ['user_id'], ['id'])
 
+# hi
     op.add_column('users', sa.Column('user_role', sa.Enum('user', 'admin', 'moderator', name='user_role'), nullable=False, server_default='user'))
     op.alter_column('users', 'email',
                existing_type=sa.VARCHAR(length=50),
