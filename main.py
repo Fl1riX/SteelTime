@@ -15,6 +15,10 @@ from src.limiter import limiter
 from src.presentation.middlewares import MetricsMiddleware
 from src.infrastructure.tasks.cleanup_magic_tokens import cleanup_telegram_tokens
 from src.config import get_database_url
+from src.infrastructure.tasks.remove_bans import remove_expired_bans
+from src.infrastructure.db import database
+
+scheduler = AsyncIOScheduler() # Планировщик
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -24,17 +28,31 @@ async def lifespan(app: FastAPI):
         DB_URL
     )
     
-    SessionLocal = async_sessionmaker(
-        bind=engine, 
-        class_=AsyncSession, 
+    database.SessionLocal = async_sessionmaker(
+        bind=engine,
+        class_=AsyncSession,
         expire_on_commit=False
     )
     
-    app.state.SessionLocal = SessionLocal
+    @app.on_event("startup")
+    async def startup():
+        scheduler.add_job(
+            cleanup_telegram_tokens,
+            "interval",
+            minutes=5
+        )
+        scheduler.add_job(
+            remove_expired_bans,
+            "interval",
+            minutes=10
+        )
+    scheduler.start()
+
     # При старте выполняется ко до yiled
     yield
     # выполняется код после yiled и остановка
     
+    scheduler.dispose()
     await engine.dispose()
     
 
@@ -68,18 +86,6 @@ app.add_middleware(
     ],
     allow_credentials=True
 )
-
-scheduler = AsyncIOScheduler() # Планировщик
-@app.on_event("startup")
-async def startup():
-    scheduler.add_job(
-        cleanup_telegram_tokens,
-        "interval",
-        minutes=5
-    )
-    scheduler.start()
-
-
 
 @app.get("/")
 @limiter.limit("5/minute")

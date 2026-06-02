@@ -1,15 +1,18 @@
 from sqlalchemy.orm import declarative_base
-from fastapi import Request
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker
+)
 
 Base = declarative_base()
 
-async def get_db(request: Request):
-    
-    async with request.app.state.SessionLocal() as session:
-        try:
+SessionLocal: async_sessionmaker[AsyncSession] | None = None
+
+async def get_db():
+    if SessionLocal is None:
+        raise RuntimeError("Database is not initialied")
+    async with SessionLocal() as session:
             yield session
-        finally:
-            await session.close()
 
 
 
