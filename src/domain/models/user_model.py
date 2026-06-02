@@ -45,7 +45,7 @@ class User(Base):
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     is_entrepreneur: Mapped[bool] = mapped_column(Boolean, default=False)
-    role: Mapped[str] = mapped_column(Enum("user", "admin", "moderator"), default="user", name="user_role")
+    role: Mapped[str] = mapped_column(Enum("user", "admin", "moderator", name="user_role"), default="user", nullable=False)
 
     bans: Mapped[List["Ban"]] = relationship(
         back_populates="user",
