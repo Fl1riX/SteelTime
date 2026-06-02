@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Integer, String, func
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from src.infrastructure.db.database import Base
@@ -56,7 +56,6 @@ class Ban(Base):
             unique=True,
             postgresql_where=(
                 revoked_at.is_(None)
-                & (expires_at.is_(None) | (expires_at > func.now()))
             ),
         ),
     )
