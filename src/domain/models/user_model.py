@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
 from typing import List, TYPE_CHECKING
+from enum import StrEnum
 
-from sqlalchemy import Boolean, DateTime, Enum, Integer, String
+from sqlalchemy import Boolean, DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from src.infrastructure.db.database import Base
@@ -12,6 +13,12 @@ if TYPE_CHECKING:
     from src.domain.models.appointment_model import Appointment
     from src.domain.models.magic_token_model import MagicToken
     from src.domain.models.service_model import Service
+
+class UserRole(StrEnum):
+    """Класс для ролей пользователей с python enum."""
+    USER = "user"
+    ADMIN = "admin"
+    MODERATOR = "moderator"
 
 class User(Base):
     """
@@ -45,7 +52,11 @@ class User(Base):
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     is_entrepreneur: Mapped[bool] = mapped_column(Boolean, default=False)
-    role: Mapped[str] = mapped_column(Enum("user", "admin", "moderator", name="user_role"), default="user", nullable=False)
+    role: Mapped[str] = mapped_column(
+        String(20), 
+        default=UserRole.USER.value, 
+        nullable=False
+    )
 
     bans: Mapped[List["Ban"]] = relationship(
         back_populates="user",
