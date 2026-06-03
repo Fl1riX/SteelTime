@@ -2,12 +2,31 @@
   execute-command: /home/fl1rix/SteelTime/deploy/deploy.sh
   command-working-directory: /home/fl1rix/SteelTime
   trigger-rule:
-    match:
-      type: payload-hmac-sha256
-      secret: "ЗАМЕНИТЬ НА РЕАЛЬНЫЙ"
-      parameter:
-        source: header
-        name: X-Hub-Signature-256
+    and: 
+      - match: # Проверка подписи от github
+          type: payload-hmac-sha256
+          secret: "ЗАМЕНИТЬ НА РЕАЛЬНЫЙ"
+          parameter:
+            source: header
+            name: X-Hub-Signature-256
+      - match:  # Проверка на завершенность действия action. Потому что workflow шлет событие дважды: in_progress и completed
+          type: value
+          value: completed
+          parameter:
+            source: payload 
+            name: action
+      - match: # проверка, что workflow завершился успешено
+        type: value
+        value: success
+        parameter:
+          source: payload
+          name: workflow_run.conclusion
+      - match: # проверка, что ветка main
+        type: value
+        value: main
+        parameter:
+          source: payload
+          name: workflow_run.head_branch
 
 
 # генерацию ключа openssl rand -hex 32
