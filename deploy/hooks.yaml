@@ -5,7 +5,7 @@
     match:
       type: payload-hmac-sha256
       secret: "ЗАМЕНИТЬ НА РЕАЛЬНЫЙ"
-      parametr:
+      parameter:
         source: header
         name: X-Hub-Signature-256
 
