@@ -1,0 +1,13 @@
+- id: deploy # станет частью url hooks/deploy
+  execute-command: /home/fl1rix/SteelTime/deploy/deploy.sh
+  command-working-directory: /home/fl1rix/SteelTime
+  trigger-rule:
+    match:
+      type: payload-hmac-sha256
+      secret: "ЗАМЕНИТЬ НА РЕАЛЬНЫЙ"
+      parametr:
+        source: header
+        name: X-Hub-Signature-256
+
+# геренацию ключа openssl rand hex -32
+# путь для конфига /etc/webhook.conf
