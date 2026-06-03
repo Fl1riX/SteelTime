@@ -7,7 +7,7 @@ from src.infrastructure.db.database import SessionLocal
 
 async def cleanup_telegram_tokens():
     """Очистка истекших токенов"""
-    async with SessionLocal() as db: # type: ignore
+    async with SessionLocal() as db:
         logger.info("🔍 Очистка токенов...")
         try:
             await db.execute(delete(MagicToken).where(
