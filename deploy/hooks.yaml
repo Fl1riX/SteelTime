@@ -9,5 +9,6 @@
         source: header
         name: X-Hub-Signature-256
 
-# геренацию ключа openssl rand hex -32
+
+# генерацию ключа openssl rand -hex 32
 # путь для конфига /etc/webhook.conf
