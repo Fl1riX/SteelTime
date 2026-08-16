@@ -1,27 +1,29 @@
 #!/bin/bash
 
 set -e
-
 cd /home/fl1rix/SteelTime/
 
-echo "----- Deploy started: $(date) -----" >> ./deploy.log
+# Включаем автоматическое логирование ВСЕГО скрипта в файл
+exec >> ./deploy.log 2>&1
 
-# Скачаиваем изменения
-git fetch origin main >> ./deploy.log 2>&1
+echo "----- Deploy started: $(date) -----"
 
-# Стираем любые незакоммиченные изменения
-git checkout . >> ./deploy.log 2>&1
+# Скачиваем изменения из репозитория
+git fetch origin main
 
-# Жестко приравниваем локальную ветку к удаленной
-git checkout . >> ./deploy.log 2>&1
+# Стираем любые изменения в текущих файлах
+git checkout .
 
-# Удаляем все неотслеживаемые файлы
-git clean -fd >> ./deploy.log 2>&1
+# Жестко двигаем ветку вперед до актуального состояния на GitHub/GitLab
+git reset --hard origin/main
 
-git status >> ./deploy.log 2>&1
+# Удаляем весь случайный мусор и новые неотслеживаемые файлы
+git clean -fd
+
+git status
 
 # Обновляем и перезапускаем Docker
-docker compose pull >> ./deploy.log 2>&1
-docker compose up -d >> ./deploy.log 2>&1
+docker compose pull
+docker compose up -d
 
-echo "--- Deploy finished successfully ---" >> ./deploy.log
+echo "--- Deploy finished successfully ---"
