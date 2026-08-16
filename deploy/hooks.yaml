@@ -16,17 +16,17 @@
             source: payload 
             name: action
       - match: # проверка, что workflow завершился успешено
-        type: value
-        value: success
-        parameter:
-          source: payload
-          name: workflow_run.conclusion
+          type: value
+          value: success
+          parameter:
+            source: payload
+            name: workflow_run.conclusion
       - match: # проверка, что ветка main
-        type: value
-        value: main
-        parameter:
-          source: payload
-          name: workflow_run.head_branch
+          type: value
+          value: main
+          parameter:
+            source: payload
+            name: workflow_run.head_branch
 
 
 # генерацию ключа openssl rand -hex 32
