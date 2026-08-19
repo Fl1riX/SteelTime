@@ -37,7 +37,7 @@ class Unauthorized(HTTPException):
     """Требуется авторизация (401)"""
     def __init__(
         self, 
-        message: str = "Требуется авторазиция", 
+        message: str = "Требуется авторизация", 
         headers: Optional[dict[str, str]] = None
     ):
         super().__init__(
