@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from typing import Optional
 
 class NoAccess(HTTPException):
     """Нет права доступа (403)"""
@@ -34,8 +35,13 @@ class ConflictError(HTTPException):
 
 class Unauthorized(HTTPException):
     """Требуется авторизация (401)"""
-    def __init__(self, message: str = "Требуется авторазиция"):
+    def __init__(
+        self, 
+        message: str = "Требуется авторизация", 
+        headers: Optional[dict[str, str]] = None
+    ):
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=message
+            detail=message,
+            headers=headers
         )
