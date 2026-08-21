@@ -5,7 +5,7 @@ from src.shared.schemas import service_schema
 from src.logger import logger
 from src.infrastructure.db.database import get_db
 from src.domain.services.service_service import ServiceService
-from src.presentation.api.v1.auth.dependencies import get_current_user_id
+from src.presentation.api.v1.auth.dependencies import get_active_user
 from src.limiter import limiter
 from src.presentation.api.v1.exceptions import NotFound, ConflictError, NoAccess, NotCorrect
 
@@ -33,7 +33,7 @@ async def get_service(
 async def create_service(
     request: Request,
     service: service_schema.ServiceCreate, 
-    current_user_id: int = Depends(get_current_user_id), 
+    current_user_id: int = Depends(get_active_user), 
     db: AsyncSession = Depends(get_db)
 ):
     if service.fullname is not None:
@@ -61,7 +61,7 @@ async def create_service(
 async def delete_service(
     request: Request,
     service_id: int, 
-    current_user_id: int = Depends(get_current_user_id), 
+    current_user_id: int = Depends(get_active_user), 
     db: AsyncSession = Depends(get_db)
 ):
     logger.info(f"DELETE: Проверка наличия услуги с id: {service_id} в бд...")
@@ -86,7 +86,7 @@ async def update_service(
     request: Request,
     new_service: service_schema.ServiceCreate, 
     service_id: int, 
-    current_user_id: int = Depends(get_current_user_id), 
+    current_user_id: int = Depends(get_active_user), 
     db: AsyncSession = Depends(get_db)
 ):
     logger.info("PUT: Проверка наличия услуги в бд...")

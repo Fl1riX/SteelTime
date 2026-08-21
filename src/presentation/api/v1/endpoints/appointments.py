@@ -6,7 +6,7 @@ from src.logger import logger
 from src.infrastructure.db.database import get_db
 from src.limiter import limiter
 from src.domain.services.appointments_service import AppointmentService
-from src.presentation.api.v1.auth.dependencies import get_current_user_id
+from src.presentation.api.v1.auth.dependencies import get_active_user
 from src.presentation.api.v1.exceptions import NotFound, NoAccess, ConflictError
 
 router = APIRouter(prefix="/appointments", tags=["Записи"])
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/appointments", tags=["Записи"])
 async def get_appointment(
     request: Request,
     appointment_id: int, 
-    current_user_id: int = Depends(get_current_user_id), 
+    current_user_id: int = Depends(get_active_user), 
     db: AsyncSession = Depends(get_db)
 ):
     logger.info(f"GET: Поиск записи с id: {appointment_id} в базе данных...")
@@ -39,7 +39,7 @@ async def get_appointment(
 async def create_appointment(
     request: Request,
     appointment: appointment_schema.AppointmentCreate, 
-    current_user_id: int = Depends(get_current_user_id), 
+    current_user_id: int = Depends(get_active_user), 
     db: AsyncSession = Depends(get_db)
 ):
     logger.info("POST: Проверка наличия записи в бд...")
@@ -60,7 +60,7 @@ async def update_appointment(
     request: Request,
     appointment_id: int, 
     new_appointment: appointment_schema.AppointmentCreate, 
-    current_user_id: int = Depends(get_current_user_id), 
+    current_user_id: int = Depends(get_active_user), 
     db: AsyncSession = Depends(get_db)
 ):
     logger.info(f"PUT: Поиск записи с id: {appointment_id} в базе данных...")
@@ -89,7 +89,7 @@ async def update_appointment(
 async def delete_appointment(
     request: Request,
     appointment_id: int, 
-    current_user_id: int = Depends(get_current_user_id), 
+    current_user_id: int = Depends(get_active_user), 
     db: AsyncSession = Depends(get_db)
 ):
     logger.info(f"DELETE: Поиск записи с id: {appointment_id} в базе данных...")

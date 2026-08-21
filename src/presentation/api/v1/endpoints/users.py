@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request
 from src.shared.schemas import user_schema
 from src.logger import logger
 from src.infrastructure.db.database import get_db
-from src.presentation.api.v1.auth.dependencies import get_current_user_id
+from src.presentation.api.v1.auth.dependencies import get_active_user
 from src.domain.services.user_service import UserService
 from src.domain.services.tg_link_service import TgLinkService
 from src.limiter import limiter
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/users", tags=["Пользователи"])
 @router.get("/me", response_model=user_schema.UserPublic)
 async def get_me(
     request: Request,
-    current_user_id: int = Depends(get_current_user_id),
+    current_user_id: int = Depends(get_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     logger.info(f"Получение информации об аккауте пользователя: {current_user_id}...")
@@ -37,7 +37,7 @@ async def get_me(
 async def get_user(
     request: Request,
     user_id: int, 
-    current_user_id: int = Depends(get_current_user_id), 
+    current_user_id: int = Depends(get_active_user), 
     db: AsyncSession = Depends(get_db)
 ):
     logger.info("Аутентификация пользователя")
@@ -82,7 +82,7 @@ async def check_user_telegram_connection(
 async def update_user(
     request: Request,
     new_user: user_schema.UserUpdate, 
-    current_user_id: int = Depends(get_current_user_id), 
+    current_user_id: int = Depends(get_active_user), 
     db: AsyncSession = Depends(get_db)
 ):
     logger.info("Аутентификация пользователя")
@@ -108,7 +108,7 @@ async def update_user(
 async def delete_user(
     request: Request,
     user_id: int, 
-    current_user_id: int = Depends(get_current_user_id), 
+    current_user_id: int = Depends(get_active_user), 
     db: AsyncSession = Depends(get_db)
 ):  
     logger.info("Аутентификация пользователя")
