@@ -89,6 +89,9 @@ class ModerationService:
             logger.info(f"Пользователь {user_id} не существует")
             raise UserNotFound()
         
+        if moder.role == UserRole.USER:
+            return False
+        
         if moder.role == user.role:
             return False
         
