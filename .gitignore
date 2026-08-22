@@ -18,3 +18,4 @@ cloudflared.deb
 coverage.xml
 .coverage
 migrations.md
+docker-compose.dev.yml
