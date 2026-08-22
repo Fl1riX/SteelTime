@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.infrastructure.db.database import get_db
 from src.presentation.api.v1.auth.jwt_handler import decode_token
 from src.domain.services.user_service import UserService
-from src.domain.models.user_model import User
+from src.domain.models.user_model import User, UserRole
 from src.presentation.api.v1.exceptions import NoAccess, Unauthorized, NotFound
 from src.logger import logger
 
@@ -87,8 +87,16 @@ async def get_active_user(
         
     return current_user
     
+def check_user_role(role: UserRole):
+    """Dependency фабрика для проверки роли пользователя"""
     
+    async def check_role(
+        active_user: User = Depends(get_active_user)
+    ) -> None:
     
+        if active_user.role != role:
+            raise NoAccess("У вас нет прав для этого действия")
     
+    return check_role
 
 
