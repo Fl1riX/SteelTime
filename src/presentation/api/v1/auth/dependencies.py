@@ -97,20 +97,20 @@ async def get_active_user(
     
     return current_user
     
-def check_user_role(*roles: UserRole):
+def check_user_privilege(*roles: UserRole):
     """Dependency фабрика для проверки роли пользователя"""
     
     async def check_role(
         active_user: User = Depends(get_active_user)
-    ) -> None:
+    ) -> User:
         logger.info(
             f"Проверка прав пользователя с id: {active_user.id}"
         )
         
-        if active_user.role != roles:
+        if active_user.role not in roles:
             logger.warning(
                 f"Пользователь с id: {active_user.id} "
-                "не имеет роли: {role}"
+                f"не имеет ни одной из ролей: {roles}"
             )
             
             raise NoAccess("У вас нет прав для этого действия")
@@ -119,6 +119,7 @@ def check_user_role(*roles: UserRole):
             f"Пользователь с id: {active_user.id} "
             f"имеет привилегию: {roles}. Доступ разрешен"
         )
+        return active_user
         
     return check_role
 
