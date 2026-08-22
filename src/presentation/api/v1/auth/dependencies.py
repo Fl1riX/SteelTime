@@ -77,14 +77,24 @@ async def get_active_user(
     если он не забанен или ошибку 403
     """
     
+    logger.info(f"Проверка на наличие банов у пользователя с id: {current_user.id}")
     for ban in current_user.bans: # current_user.bans вернет список объектов(банов)
         if ban.is_active: # Проходимя по списку и если если бан активен, то возвращаем ошибку
+            logger.warning(
+                f"Пользователь с id: {current_user.id} "
+                f"забанен по причине: {ban.reason}"
+            )
             raise NoAccess(
-                f"Вы были забанены.\n \
-                Причина: {ban.reason}\n \
-                Срок истечения: {ban.expires_at}"
+                f"Вы были забанены.\n"
+                f"Причина: {ban.reason}\n"
+                f"Срок истечения: {ban.expires_at}"
             )
         
+    logger.info(
+        f"Пользователь с id: {current_user.id} "
+        "не имеет активных банов"
+    )
+    
     return current_user
     
 def check_user_role(role: UserRole):
@@ -93,10 +103,23 @@ def check_user_role(role: UserRole):
     async def check_role(
         active_user: User = Depends(get_active_user)
     ) -> None:
-    
+        logger.info(
+            f"Проверка прав пользователя с id: {active_user.id}"
+        )
+        
         if active_user.role != role:
+            logger.warning(
+                f"Пользователь с id: {active_user.id} "
+                "не имеет роли: {role}"
+            )
+            
             raise NoAccess("У вас нет прав для этого действия")
-    
+        
+        logger.info(
+            f"Пользователь с id: {active_user.id} "
+            f"имеет привилегию: {role}. Доступ разрешен"
+        )
+        
     return check_role
 
 
